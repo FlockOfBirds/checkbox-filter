@@ -3,7 +3,7 @@
 [![Dev Dependency Status](https://david-dm.org/mendixlabs/checkbox-filter.svg#info=devDependencies)](https://david-dm.org/mendixlabs/checkbox-filter#info=devDependencies)
 [![codecov](https://codecov.io/gh/mendixlabs/checkbox-filter/branch/master/graph/badge.svg)](https://codecov.io/gh/mendixlabs/checkbox-filter)
 
-# Checkbox filter
+# checkbox-filter
 Filter mendix list views using a checkbox
 
 ## Features
