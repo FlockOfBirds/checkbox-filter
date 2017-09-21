@@ -14,18 +14,19 @@
             <category>General</category>
             <description>Checks the checkbox on initial loading</description>
         </property>
-        <property key="filterBy" type="enumeration" defaultValue="attribute">
-            <caption>Filter on</caption>
-            <category>Checked filter</category>
+        <property key="filterBy" type="enumeration" defaultValue="none">
+            <caption>Filter</caption>
+            <category>Checked</category>
             <description>Select the method of filtering</description>
             <enumerationValues>
+                <enumerationValue key="none">None</enumerationValue>
                 <enumerationValue key="attribute">Attribute</enumerationValue>
                 <enumerationValue key="XPath">XPath</enumerationValue>
             </enumerationValues>
         </property>
         <property key="attribute" type="attribute" required="false" entityProperty="listviewEntity">
             <caption>Attribute</caption>
-            <category>Checked filter</category>
+            <category>Checked</category>
             <description>The attribute to apply filter</description>
             <attributeTypes>
                 <attributeType name="String"/>
@@ -37,27 +38,27 @@
         </property>
         <property key="attributeValue" type="string" required="false">
             <caption>Attribute value</caption>
-            <category>Checked filter</category>
+            <category>Checked</category>
             <description>Value of the attribute to be matching (used when filtering on attribute)</description>
         </property>
         <property key="constraint" type="entityConstraint" required="false" entityProperty="listviewEntity">
             <caption>XPath constraint</caption>
-            <category>Checked filter</category>
+            <category>Checked</category>
             <description>Constraint on the data (used when comparison is XPath)</description>
         </property>
-        <property key="unCheckedFilterBy" type="enumeration" defaultValue="attribute">
-            <caption>Unfilter on</caption>
-            <category>Unchecked filter</category>
+        <property key="unCheckedFilterBy" type="enumeration" defaultValue="none">
+            <caption>Filter </caption>
+            <category>Unchecked</category>
             <description>Select the method of filtering</description>
             <enumerationValues>
-                <enumerationValue key="nothing">Nothing (Show All)</enumerationValue>
+                <enumerationValue key="none">None</enumerationValue>
                 <enumerationValue key="attribute">Attribute</enumerationValue>
                 <enumerationValue key="XPath">XPath</enumerationValue>
             </enumerationValues>
         </property>
         <property key="unCheckedAttribute" type="attribute" required="false" entityProperty="listviewEntity">
-            <caption>Unfilter attribute</caption>
-            <category>Unchecked filter</category>
+            <caption>Attribute </caption>
+            <category>Unchecked</category>
             <description>The attribute to apply the filter (used when filtering on attribute)</description>
             <attributeTypes>
                 <attributeType name="String"/>
@@ -67,13 +68,13 @@
             </attributeTypes>
         </property>
         <property key="unCheckedAttributeValue" type="string" required="false">
-            <caption>Unfilter attribute value</caption>
-            <category>Unchecked filter</category>
+            <caption>Attribute value </caption>
+            <category>Unchecked</category>
             <description>Value of the attribute to be matching (used when filtering on attribute)</description>
         </property>
         <property key="unCheckedConstraint" type="entityConstraint" required="false" entityProperty="listviewEntity">
-            <caption>Unfilter XPath constraint</caption>
-            <category>Unchecked filter</category>
+            <caption>XPath constraint </caption>
+            <category>Unchecked</category>
             <description>Constraint on the data (used when comparison is XPath)</description>
         </property>
     </properties>
