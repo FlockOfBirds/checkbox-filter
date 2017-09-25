@@ -19,50 +19,52 @@ export const parseStyle = (style = ""): {[key: string]: string} => {
 };
 
 export class Utils {
-    static validate(props: ContainerProps & { filterNode: HTMLElement; targetListView: ListView; validate: boolean}): string {
-        const widgetName = "dropdown-filter";
+    static validate(props: ContainerProps & { filterNode: HTMLElement; targetListView: ListView; validate: boolean, isModeler?: boolean}): string {
+        const widgetName = props.friendlyId;
+        const { targetListView } = props;
+        const errorMessage = [];
         // validate filter values if filterby = attribute, then value should not be empty or "" or " ".
         if (!props.filterNode) {
             return `${widgetName}: unable to find a listview with to attach to`;
         }
 
-        if (!(props.targetListView && props.targetListView._datasource)) {
+        if (props.filterBy === "XPath" && !props.constraint) {
+            errorMessage.push(`Filter by 'XPath' requires an 'XPath contraint'`);
+        }
+        if (props.filterBy === "attribute" && !props.attribute) {
+            errorMessage.push(`Filter by 'Attribute' requires an 'Attribute'`);
+        }
+        if (props.filterBy === "attribute" && !props.attributeValue) {
+            errorMessage.push(`Filter by 'Attribute' requires an 'Attribute value`);
+        }
+
+        if (props.unCheckedFilterBy === "XPath" && !props.unCheckedConstraint) {
+            errorMessage.push(`Unchecked filter by 'XPath' requires an 'XPath contraint'`);
+        }
+        if (props.unCheckedFilterBy === "attribute" && !props.unCheckedAttribute) {
+            errorMessage.push(`Unchecked filter by 'Attribute' requires an 'Attribute'`);
+        }
+        if (props.unCheckedFilterBy === "attribute" && !props.unCheckedAttributeValue) {
+            errorMessage.push(`Unchecked filter by 'Attribute' requires an 'Attribute value`);
+        }
+
+        if (errorMessage.length) {
+            return `${widgetName} : ${errorMessage.join(", ")}`;
+        }
+
+        if (props.isModeler) {
+            return "";
+        }
+
+        if (!(targetListView && targetListView._datasource && targetListView._entity && targetListView.update)) {
             return `${widgetName}: this Mendix version is incompatible`;
         }
 
-        if (props.entity && !Utils.itContains(props.entity, "/")) {
-            if (props.entity !== props.targetListView._entity) {
-                return `${widgetName}: supplied entity "${props.entity}" does not belong to list view data source`;
-            }
+        if (targetListView._entity && props.listviewEntity !== targetListView._entity) {
+            return `${widgetName}: supplied entity "${props.listviewEntity}" does not belong to list view data source`;
         }
 
-        // if (props.filters && !props.filters.length) {
-        //     return `${widgetName}: should have atleast one filter`;
-        // }
-
-        // if (props.filters) {
-        //     const errorMessage: string[] = [];
-        //     props.filters.forEach((filter, index) => {
-        //         if (filter.filterBy === "XPath" && !filter.constraint) {
-        //             errorMessage.push(`Filter position: {${index + 1 }} is missing XPath constraint`);
-        //         }
-        //         if (filter.filterBy === "attribute" && !filter.attributeValue) {
-        //             errorMessage.push(`Filter position: {${index + 1 }} is missing a Value constraint`);
-        //         }
-        //     });
-        //     if (errorMessage.length) {
-        //         return `${widgetName} : ${errorMessage.join(", ")}`;
-        //     }
-        // }
-        // if (props.filters.filter(filter => filter.isDefault).length > 1) {
-        //     return `${widgetName}: should only have one filter set as default`;
-        // }
-
         return "";
-    }
-
-    static isCompatible(targetListView: ListView): boolean {
-        return !!(targetListView && targetListView._datasource);
     }
 
     static findTargetNode(filterNode: HTMLElement): HTMLElement | null {

@@ -17,7 +17,7 @@ interface WrapperProps {
 }
 
 export interface ContainerProps extends WrapperProps {
-    entity: string;
+    listviewEntity: string;
     caption: string;
     filterBy: filterOptions;
     attribute: string;
@@ -31,7 +31,7 @@ export interface ContainerProps extends WrapperProps {
 }
 
 
-export type filterOptions = "attribute" | "XPath";
+export type filterOptions = "attribute" | "XPath" | "None";
 type HybridConstraint = Array<{ attribute: string; operator: string; value: string; path?: string; }>;
 
 export interface ListView extends mxui.widget._WidgetBase {
@@ -72,6 +72,7 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
             },
             this.renderAlert(),
             createElement(CheckboxFilter, {
+                caption: this.props.caption,
                 handleChange: this.handleChange,
                 isChecked: this.props.defaultChecked
             })

@@ -1,6 +1,7 @@
 import { ChangeEvent, Component, createElement } from "react";
 
 export interface CheckboxFilterProps {
+    caption?: string;
     isChecked: boolean;
     handleChange: (value: boolean) => void;
 }
@@ -15,27 +16,26 @@ export class CheckboxFilter extends Component<CheckboxFilterProps, CheckboxFilte
         super(props);
 
         // Should have state because select is a controlled component
-        this.state = {
-            isChecked : this.props.isChecked
-        };
+        this.state = { isChecked : this.props.isChecked };
         this.handleOnChange = this.handleOnChange.bind(this);
     }
 
     render() {
-        return createElement("input", {
-            checked: this.state.isChecked,
-            defaultChecked: this.state.isChecked,
-            onChange: this.handleOnChange,
-            type: "checkbox"
-        });
+        return createElement("div", {},
+            createElement("input", {
+                checked: this.state.isChecked,
+                defaultChecked: this.state.isChecked,
+                onChange: this.handleOnChange,
+                type: "checkbox"
+            }),
+            createElement("span", {}, ` ${this.props.caption}`)
+        );
     }
 
-
-    componentDidMount() {
-        // initial state has selectedValue as defaultFilter's index
-        // const selectedValue = this.props.defaultFilterIndex < 0 ? "0" : `${this.props.defaultFilterIndex}`;
-        // const selectedFilter = this.filters.find(filter => filter.selectedValue === selectedValue);
-        this.props.handleChange(this.props.isChecked);
+    componentWillReceiveProps(nextProps: CheckboxFilterProps) {
+        if (nextProps.isChecked !== this.props.isChecked) {
+            this.setState({ isChecked: nextProps.isChecked });
+        }
     }
 
     componentDidUpdate(_prevProps: CheckboxFilterProps, _prevState: CheckboxFilterState) {
@@ -45,7 +45,6 @@ export class CheckboxFilter extends Component<CheckboxFilterProps, CheckboxFilte
 
     private handleOnChange(_event: ChangeEvent<HTMLElement>) {
         this.setState({ isChecked: !this.state.isChecked });
-        console.log(this.state.isChecked); // tslint:disable-line
         this.props.handleChange(!this.state.isChecked);
     }
 }

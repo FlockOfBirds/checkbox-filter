@@ -14,6 +14,15 @@
             <category>General</category>
             <description>Checks the checkbox on initial loading</description>
         </property>
+        <property key="caption" type="translatableString">
+            <caption>Checkbox caption</caption>
+            <category>General</category>
+            <description>Text displayed on the checkbox label</description>
+            <translations>
+                <translation lang="en_US">Check Me!</translation>
+                <translation lang="nl_NL">Check Me!_NL</translation>
+            </translations>
+        </property>
         <property key="filterBy" type="enumeration" defaultValue="none">
             <caption>Filter</caption>
             <category>Checked</category>
