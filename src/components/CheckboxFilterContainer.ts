@@ -1,8 +1,8 @@
-import { Component, createElement } from "react";
+import { Component, ReactElement, createElement } from "react";
 import { findDOMNode } from "react-dom";
 
 import { Alert } from "./Alert";
-import { CheckboxFilter } from "./CheckboxFilter";
+import { CheckboxFilter, CheckboxFilterProps } from "./CheckboxFilter";
 import { Utils, parseStyle } from "../utils/ContainerUtils";
 
 import * as classNames from "classnames";
@@ -71,16 +71,12 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
                 style: parseStyle(this.props.style)
             },
             this.renderAlert(),
-            createElement(CheckboxFilter, {
-                caption: this.props.caption,
-                handleChange: this.handleChange,
-                isChecked: this.props.defaultChecked
-            })
+            this.renderComponent()
         );
     }
 
     private renderAlert() {
-        const errorMessage = Utils.validate({
+        const message = Utils.validate({
             ...this.props as ContainerProps,
             filterNode: this.state.targetNode,
             targetListView: this.state.targetListView,
@@ -90,8 +86,21 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
         return createElement(Alert, {
             bootstrapStyle: "danger",
             className: "widget-checkbox-filter-alert",
-            message: errorMessage
+            message
         });
+    }
+
+    private renderComponent(): ReactElement<CheckboxFilterProps> {
+        if (this.state.validationPassed) {
+
+            return createElement(CheckboxFilter, {
+                caption: this.props.caption,
+                handleChange: this.handleChange,
+                isChecked: this.props.defaultChecked
+            });
+        }
+
+        return null;
     }
 
     private handleChange(isChecked: boolean) {

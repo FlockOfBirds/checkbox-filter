@@ -3,10 +3,15 @@
 [![Dev Dependency Status](https://david-dm.org/mendixlabs/checkbox-filter.svg#info=devDependencies)](https://david-dm.org/mendixlabs/checkbox-filter#info=devDependencies)
 [![codecov](https://codecov.io/gh/mendixlabs/checkbox-filter/branch/master/graph/badge.svg)](https://codecov.io/gh/mendixlabs/checkbox-filter)
 
-# checkbox-filter
-Filter mendix list views using a checkbox
+# Checkbox Filter
+Filter mendix listviews using a checkbox
 
 ## Features
+* Filter items by an attribute
+* Filter items by XPath
+* Configure filter options when the checkbox is checked
+* Configure filter options when the checkbox is unchecked
+* Set a checked checkbox as default
 
 ## Dependencies
 Mendix 7.6
@@ -15,6 +20,8 @@ Mendix 7.6
 [https://checkboxfilter.mxapps.io/](https://checkboxfilter.mxapps.io/)
 
 ## Usage
+Configure the widget as below.
+
 
 ## Issues, suggestions and feature requests
 Please report issues at [https://github.com/mendixlabs/checkbox-filter/issues](https://github.com/mendixlabs/checkbox-filter/issues).

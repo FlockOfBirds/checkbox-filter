@@ -22,9 +22,9 @@ cache:
   - node_modules
 env:
   global:
-  - MX_APP_NAME=dropdownfilter
+  - MX_APP_NAME=checkboxfilter
   - MX_BRANCH_NAME=trunk
-  - MX_PROJECT_ID=0367b53f-3459-4c4e-8006-73088d82922e
+  - MX_PROJECT_ID=a63d7f78-f841-40f2-94c7-3d917ef834de
   - MX_ENVIRONMENT=Sandbox
   - MX_USER=ci@flockofbirds.org
 deploy:
