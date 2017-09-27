@@ -18,7 +18,6 @@ interface WrapperProps {
 
 export interface ContainerProps extends WrapperProps {
     listviewEntity: string;
-    caption: string;
     filterBy: filterOptions;
     attribute: string;
     attributeValue: string;
@@ -29,7 +28,6 @@ export interface ContainerProps extends WrapperProps {
     unCheckedAttributeValue: string;
     unCheckedConstraint: string;
 }
-
 
 export type filterOptions = "attribute" | "XPath" | "None";
 type HybridConstraint = Array<{ attribute: string; operator: string; value: string; path?: string; }>;
@@ -53,15 +51,15 @@ export interface ContainerState {
 }
 
 export default class CheckboxFilterContainer extends Component<ContainerProps, ContainerState> {
+    private initialConstraint: HybridConstraint | string;
 
     constructor(props: ContainerProps) {
         super(props);
 
         this.state = { listviewAvailable: true };
-        this.handleChange = this.handleChange.bind(this);
-        this.connectToListView = this.connectToListView.bind(this);
+        this.applyFilter = this.applyFilter.bind(this);
         // Ensures that the listView is connected so the widget doesn't break in mobile due to unpredictable render time
-        dojoConnect.connect(props.mxform, "onNavigation", this, this.connectToListView);
+        dojoConnect.connect(props.mxform, "onNavigation", this, this.connectToListView.bind(this));
     }
 
     render() {
@@ -79,12 +77,10 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
         const message = Utils.validate({
             ...this.props as ContainerProps,
             filterNode: this.state.targetNode,
-            targetListView: this.state.targetListView,
-            validate: !this.state.listviewAvailable
+            targetListView: this.state.targetListView
         });
 
         return createElement(Alert, {
-            bootstrapStyle: "danger",
             className: "widget-checkbox-filter-alert",
             message
         });
@@ -94,8 +90,7 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
         if (this.state.validationPassed) {
 
             return createElement(CheckboxFilter, {
-                caption: this.props.caption,
-                handleChange: this.handleChange,
+                handleChange: this.applyFilter,
                 isChecked: this.props.defaultChecked
             });
         }
@@ -103,14 +98,14 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
         return null;
     }
 
-    private handleChange(isChecked: boolean) {
+    private applyFilter(isChecked: boolean) {
         const { targetListView } = this.state;
         // To support multiple filters. We attach each checkbox-filter-widget's selected constraint
         // On the listView's custom 'filter' object.
         if (targetListView && targetListView._datasource) {
             const attribute = isChecked ? this.props.attribute : this.props.unCheckedAttribute;
             const filterBy = isChecked ? this.props.filterBy : this.props.unCheckedFilterBy;
-            const constraint = isChecked ? this.props.attribute : this.props.unCheckedConstraint;
+            const constraint = isChecked ? this.props.constraint : this.props.unCheckedConstraint;
             const attributeValue = isChecked ? this.props.attributeValue : this.props.unCheckedAttributeValue;
 
             if (filterBy === "XPath") {
@@ -125,7 +120,7 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
             const finalConstraint = Object.keys(targetListView.filter)
                 .map(key => targetListView.filter[key])
                 .join("");
-            targetListView._datasource._constraints = finalConstraint;
+            targetListView._datasource._constraints = finalConstraint || this.initialConstraint;
             targetListView.update();
         }
     }
@@ -140,15 +135,15 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
             targetListView = dijitRegistry.byNode(targetNode);
             if (targetListView) {
                 targetListView.filter = {};
-                this.setState({ targetListView });
+                this.initialConstraint = targetListView._datasource._constraints;
+                this.setState({ targetListView, listviewAvailable: !!targetListView });
             }
         }
         const validateMessage = Utils.validate({
             ...this.props as ContainerProps,
             filterNode: targetNode,
-            targetListView,
-            validate: true
+            targetListView
         });
-        this.setState({ listviewAvailable: false, validationPassed: !validateMessage });
+        this.setState({ validationPassed: !validateMessage });
     }
 }

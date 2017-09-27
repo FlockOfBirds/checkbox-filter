@@ -7,24 +7,15 @@
         <property key="listviewEntity" type="entity">
             <caption>List view entity</caption>
             <category>General</category>
-            <description>Entity whose will be filtered. This entity should match the list view entity</description>
+            <description>Entity whose data will be filtered. This entity should match the list view entity</description>
         </property>
         <property key="defaultChecked" type="boolean" defaultValue="false">
             <caption>Default checked</caption>
             <category>General</category>
             <description>Checks the checkbox on initial loading</description>
         </property>
-        <property key="caption" type="translatableString">
-            <caption>Checkbox caption</caption>
-            <category>General</category>
-            <description>Text displayed on the checkbox label</description>
-            <translations>
-                <translation lang="en_US">Check Me!</translation>
-                <translation lang="nl_NL">Check Me!_NL</translation>
-            </translations>
-        </property>
         <property key="filterBy" type="enumeration" defaultValue="none">
-            <caption>Filter</caption>
+            <caption>Filter by</caption>
             <category>Checked</category>
             <description>Select the method of filtering</description>
             <enumerationValues>
@@ -36,7 +27,7 @@
         <property key="attribute" type="attribute" required="false" entityProperty="listviewEntity">
             <caption>Attribute</caption>
             <category>Checked</category>
-            <description>The attribute to apply filter</description>
+            <description>The attribute to apply filter when filtering by 'attribute'. Note: for enum use the key value, for boolean use 'true' or 'false'</description>
             <attributeTypes>
                 <attributeType name="String"/>
                 <attributeType name="Integer"/>
@@ -53,10 +44,10 @@
         <property key="constraint" type="entityConstraint" required="false" entityProperty="listviewEntity">
             <caption>XPath constraint</caption>
             <category>Checked</category>
-            <description>Constraint on the data (used when comparison is XPath)</description>
+            <description>Constraint on the data (used when filtering by XPath)</description>
         </property>
         <property key="unCheckedFilterBy" type="enumeration" defaultValue="none">
-            <caption>Filter </caption>
+            <caption>Filter by </caption>
             <category>Unchecked</category>
             <description>Select the method of filtering</description>
             <enumerationValues>
@@ -68,12 +59,13 @@
         <property key="unCheckedAttribute" type="attribute" required="false" entityProperty="listviewEntity">
             <caption>Attribute </caption>
             <category>Unchecked</category>
-            <description>The attribute to apply the filter (used when filtering on attribute)</description>
+            <description>The attribute to apply filter when filtering by 'attribute'. Note: for enum use the key value, for boolean use 'true' or 'false'</description>
             <attributeTypes>
                 <attributeType name="String"/>
                 <attributeType name="Integer"/>
                 <attributeType name="Decimal"/>
                 <attributeType name="Boolean"/>
+                <attributeType name="Enum"/>
             </attributeTypes>
         </property>
         <property key="unCheckedAttributeValue" type="string" required="false">

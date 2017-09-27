@@ -19,7 +19,7 @@ export const parseStyle = (style = ""): {[key: string]: string} => {
 };
 
 export class Utils {
-    static validate(props: ContainerProps & { filterNode: HTMLElement; targetListView: ListView; validate: boolean, isModeler?: boolean}): string {
+    static validate(props: ContainerProps & { filterNode: HTMLElement; targetListView: ListView; isModeler?: boolean}): string {
         const widgetName = props.friendlyId;
         const { targetListView } = props;
         const errorMessage = [];
@@ -37,7 +37,6 @@ export class Utils {
         if (props.filterBy === "attribute" && !props.attributeValue) {
             errorMessage.push(`Filter by 'Attribute' requires an 'Attribute value`);
         }
-
         if (props.unCheckedFilterBy === "XPath" && !props.unCheckedConstraint) {
             errorMessage.push(`Unchecked filter by 'XPath' requires an 'XPath contraint'`);
         }
@@ -47,7 +46,6 @@ export class Utils {
         if (props.unCheckedFilterBy === "attribute" && !props.unCheckedAttributeValue) {
             errorMessage.push(`Unchecked filter by 'Attribute' requires an 'Attribute value`);
         }
-
         if (errorMessage.length) {
             return `${widgetName} : ${errorMessage.join(", ")}`;
         }
@@ -72,8 +70,8 @@ export class Utils {
 
         while (!targetNode && filterNode) {
             targetNode = filterNode.querySelectorAll(`.mx-listview`)[0] as HTMLElement;
-            if (targetNode || filterNode.classList.contains("mx-incubator")
-            || filterNode.classList.contains("mx-offscreen") || filterNode.isEqualNode(document)) {
+            if (targetNode || filterNode.isEqualNode(document) || filterNode.classList.contains("mx-incubator")
+            || filterNode.classList.contains("mx-offscreen")) {
                     break;
                 }
             filterNode = filterNode.parentNode as HTMLElement;

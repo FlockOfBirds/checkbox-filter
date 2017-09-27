@@ -1,8 +1,8 @@
 import { Component, createElement } from "react";
 import { findDOMNode } from "react-dom";
 import * as classNames from "classnames";
-import { Alert } from "./components/Alert";
 
+import { Alert } from "./components/Alert";
 import { CheckboxFilter } from "./components/CheckboxFilter";
 import { ContainerProps, ContainerState } from "./components/CheckboxFilterContainer";
 import { Utils, parseStyle } from "./utils/ContainerUtils";
@@ -23,7 +23,6 @@ export class preview extends Component<ContainerProps, ContainerState> {
             },
             this.renderAlert(),
             createElement(CheckboxFilter, {
-                caption: this.props.caption,
                 handleChange:  () => { return; },
                 isChecked: this.props.defaultChecked
             })
@@ -54,12 +53,10 @@ export class preview extends Component<ContainerProps, ContainerState> {
             ...this.props as ContainerProps,
             filterNode: this.state.targetNode,
             isModeler: true,
-            targetListView: this.state.targetListView,
-            validate: !this.state.listviewAvailable
+            targetListView: this.state.targetListView
         });
 
         return createElement(Alert, {
-            bootstrapStyle: "danger",
             className: "widget-checkbox-filter-alert",
             message: errorMessage
         });
@@ -67,33 +64,12 @@ export class preview extends Component<ContainerProps, ContainerState> {
 }
 
 export function getVisibleProperties(valueMap: ContainerProps, visibilityMap: any) {
-    if (valueMap.filterBy === "attribute") {
-        visibilityMap.attribute = true;
-        visibilityMap.attributeValue = true;
-        visibilityMap.constraint = false;
-    } else if (valueMap.filterBy === "XPath") {
-        visibilityMap.attribute = false;
-        visibilityMap.attributeValue = false;
-        visibilityMap.constraint = true;
-    } else {
-        visibilityMap.attribute = false;
-        visibilityMap.attributeValue = false;
-        visibilityMap.constraint = false;
-    }
-
-    if (valueMap.unCheckedFilterBy === "attribute") {
-        visibilityMap.unCheckedAttribute = true;
-        visibilityMap.unCheckedAttributeValue = true;
-        visibilityMap.unCheckedConstraint = false;
-    } else if (valueMap.unCheckedFilterBy === "XPath") {
-        visibilityMap.unCheckedAttribute = false;
-        visibilityMap.unCheckedAttributeValue = false;
-        visibilityMap.unCheckedConstraint = true;
-    } else {
-        visibilityMap.unCheckedAttribute = false;
-        visibilityMap.unCheckedAttributeValue = false;
-        visibilityMap.unCheckedConstraint = false;
-    }
+    visibilityMap.attribute = valueMap.filterBy === "attribute";
+    visibilityMap.attributeValue = valueMap.filterBy === "attribute";
+    visibilityMap.constraint = valueMap.filterBy === "XPath";
+    visibilityMap.unCheckedAttribute = valueMap.unCheckedFilterBy === "attribute";
+    visibilityMap.unCheckedAttributeValue = valueMap.unCheckedFilterBy === "attribute";
+    visibilityMap.unCheckedConstraint = valueMap.unCheckedFilterBy === "XPath";
 
     return visibilityMap;
 }
