@@ -40,7 +40,8 @@ export interface ListView extends mxui.widget._WidgetBase {
     filter: {
         [key: string ]: HybridConstraint | string;
     };
-    update: (object: mendix.lib.MxObject, callback: () => void) => void;
+    initialConstraint: HybridConstraint | string;
+    update: (obj: mendix.lib.MxObject | null, callback?: () => void) => void;
     _entity: string;
 }
 
@@ -52,8 +53,6 @@ export interface ContainerState {
 }
 
 export default class CheckboxFilterContainer extends Component<ContainerProps, ContainerState> {
-    private initialConstraint: HybridConstraint | string;
-
     constructor(props: ContainerProps) {
         super(props);
 
@@ -72,6 +71,10 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
             this.renderAlert(),
             this.renderComponent()
         );
+    }
+
+    componentWillReceiveProps(nextProps: ContainerProps) {
+        this.applyFilter(nextProps.defaultChecked);
     }
 
     private renderAlert() {
@@ -122,7 +125,9 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
             const finalConstraint = Object.keys(targetListView.filter)
                 .map(key => targetListView.filter[key])
                 .join("");
-            targetListView._datasource._constraints = finalConstraint || this.initialConstraint;
+            targetListView._datasource._constraints = targetListView.initialConstraint + finalConstraint;
+            // we have an issue with delayed update, that the grid sometimes initially displays unsorted content.
+            // We might have to make these calls synchronous instead of async.
             targetListView.update(null, () => this.hideLoader(targetNode));
         }
     }
@@ -136,9 +141,11 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
             this.setState({ targetNode });
             targetListView = dijitRegistry.byNode(targetNode);
             if (targetListView) {
-                targetListView.filter = {};
-                this.initialConstraint = targetListView._datasource._constraints;
-                this.setState({ targetListView, listViewAvailable: !!targetListView });
+                targetListView.filter = targetListView.filter || {};
+                if (targetListView.initialConstraint === undefined) {
+                    targetListView.initialConstraint = targetListView._datasource._constraints;
+                }
+                this.setState({ targetListView, listViewAvailable: !!targetListView, targetNode });
             }
         }
         const validateMessage = Utils.validate({

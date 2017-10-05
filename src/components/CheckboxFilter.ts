@@ -27,20 +27,16 @@ export class CheckboxFilter extends Component<CheckboxFilterProps, CheckboxFilte
     }
 
     componentDidMount() {
-            this.props.handleChange(this.props.isChecked);
-        }
-
+        this.props.handleChange(this.props.isChecked);
+    }
     componentWillReceiveProps(newProps: CheckboxFilterProps) {
         if (this.props.isChecked !== newProps.isChecked) {
             this.setState({ isChecked : newProps.isChecked });
         }
     }
 
-    componentDidUpdate(_prevProps: CheckboxFilterProps, _prevState: CheckboxFilterState) {
-        this.props.handleChange(this.state.isChecked);
-    }
-
     private handleOnChange(event: ChangeEvent<HTMLInputElement>) {
         this.setState({ isChecked: event.target.checked });
+        this.props.handleChange(event.target.checked);
     }
 }
