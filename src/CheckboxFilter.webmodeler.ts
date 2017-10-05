@@ -12,7 +12,7 @@ export class preview extends Component<ContainerProps, ContainerState> {
     constructor(props: ContainerProps) {
         super(props);
 
-        this.state = { listviewAvailable: true };
+        this.state = { listViewAvailable: true };
     }
 
     render() {
@@ -45,7 +45,7 @@ export class preview extends Component<ContainerProps, ContainerState> {
         if (targetNode) {
             this.setState({ targetNode });
         }
-        this.setState({ listviewAvailable: true });
+        this.setState({ listViewAvailable: true });
     }
 
     private renderAlert() {

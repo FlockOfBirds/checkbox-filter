@@ -57,7 +57,6 @@ export class Utils {
         if (!(targetListView && targetListView._datasource && targetListView._entity && targetListView.update)) {
             return `${widgetName}: this Mendix version is incompatible`;
         }
-
         if (targetListView._entity && props.listviewEntity !== targetListView._entity) {
             return `${widgetName}: supplied entity "${props.listviewEntity}" does not belong to list view data source`;
         }

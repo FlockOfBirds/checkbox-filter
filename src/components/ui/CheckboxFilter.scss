@@ -1,0 +1,10 @@
+.widget-check-box-filter-loading > * {
+    opacity: 0 !important;
+}
+
+.widget-check-box-filter-loading {
+    background-color: rgba(211, 211, 211, 0.2);
+    background-image: url(./loading.gif);
+    background-repeat: no-repeat;
+    background-position: center center;
+}

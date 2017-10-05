@@ -8,6 +8,7 @@ import { Utils, parseStyle } from "../utils/ContainerUtils";
 import * as classNames from "classnames";
 import * as dijitRegistry from "dijit/registry";
 import * as dojoConnect from "dojo/_base/connect";
+import "./ui/CheckboxFilter.scss";
 
 interface WrapperProps {
     class: string;
@@ -39,12 +40,12 @@ export interface ListView extends mxui.widget._WidgetBase {
     filter: {
         [key: string ]: HybridConstraint | string;
     };
-    update: () => void;
+    update: (object: mendix.lib.MxObject, callback: () => void) => void;
     _entity: string;
 }
 
 export interface ContainerState {
-    listviewAvailable: boolean;
+    listViewAvailable: boolean;
     targetListView?: ListView;
     targetNode?: HTMLElement;
     validationPassed?: boolean;
@@ -56,7 +57,7 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
     constructor(props: ContainerProps) {
         super(props);
 
-        this.state = { listviewAvailable: true };
+        this.state = { listViewAvailable: true };
         this.applyFilter = this.applyFilter.bind(this);
         // Ensures that the listView is connected so the widget doesn't break in mobile due to unpredictable render time
         dojoConnect.connect(props.mxform, "onNavigation", this, this.connectToListView.bind(this));
@@ -99,10 +100,11 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
     }
 
     private applyFilter(isChecked: boolean) {
-        const { targetListView } = this.state;
+        const { targetListView, targetNode } = this.state;
         // To support multiple filters. We attach each checkbox-filter-widget's selected constraint
         // On the listView's custom 'filter' object.
         if (targetListView && targetListView._datasource) {
+            this.showLoader(targetNode);
             const attribute = isChecked ? this.props.attribute : this.props.unCheckedAttribute;
             const filterBy = isChecked ? this.props.filterBy : this.props.unCheckedFilterBy;
             const constraint = isChecked ? this.props.constraint : this.props.unCheckedConstraint;
@@ -121,7 +123,7 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
                 .map(key => targetListView.filter[key])
                 .join("");
             targetListView._datasource._constraints = finalConstraint || this.initialConstraint;
-            targetListView.update();
+            targetListView.update(null, () => this.hideLoader(targetNode));
         }
     }
 
@@ -136,7 +138,7 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
             if (targetListView) {
                 targetListView.filter = {};
                 this.initialConstraint = targetListView._datasource._constraints;
-                this.setState({ targetListView, listviewAvailable: !!targetListView });
+                this.setState({ targetListView, listViewAvailable: !!targetListView });
             }
         }
         const validateMessage = Utils.validate({
@@ -146,4 +148,17 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
         });
         this.setState({ validationPassed: !validateMessage });
     }
+
+    private showLoader(node?: HTMLElement) {
+        if (node) {
+            node.classList.add("widget-check-box-filter-loading");
+        }
+    }
+
+    private hideLoader(node?: HTMLElement) {
+        if (node) {
+            node.classList.remove("widget-check-box-filter-loading");
+        }
+    }
+
 }
