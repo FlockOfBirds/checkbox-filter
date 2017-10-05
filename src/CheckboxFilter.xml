@@ -2,7 +2,7 @@
 <widget id="com.mendix.widget.custom.checkboxfilter.CheckboxFilter" offlineCapable="true" needsEntityContext="false" xmlns="http://www.mendix.com/widget/1.0/">
     <name>Checkbox filter</name>
     <description>Filter Mendix list views using a checkbox</description>
-    <icon/>
+    <icon>iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAAV1BMVEUAAAB+fn4sLCwAAAB+fn52dnZqampaWlpKSkomJiYAAAACAgIBAQEAAAAAAABycnKEhISioqKkpKSysrK/v7/Kysrq6urs7Ozt7e3x8fH29vb4+Pj+/v52ANGvAAAAD3RSTlMATVZXZ2hqbG5zdYKsr+pcwTBcAAAAVUlEQVR42o3NORKAIBBE0QFlccWVde5/TocAikCr/B119ID1FIOSQMRb1CuvuJ+yXnUYExTMXd4E2m/WayjxgeLwqzcXGzfFmBo3OEfuOuYt5Npv9wG6DgRaVjOGtQAAAABJRU5ErkJggg==</icon>
     <properties>
         <property key="listviewEntity" type="entity">
             <caption>List view entity</caption>
