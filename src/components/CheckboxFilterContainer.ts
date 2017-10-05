@@ -37,6 +37,9 @@ export interface ListView extends mxui.widget._WidgetBase {
     _datasource: {
         _constraints: HybridConstraint | string;
     };
+    datasource: {
+        type: "microflow" | "entityPath" | "database" | "xpath";
+    };
     filter: {
         [key: string ]: HybridConstraint | string;
     };

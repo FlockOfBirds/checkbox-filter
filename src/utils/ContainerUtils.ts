@@ -54,6 +54,10 @@ export class Utils {
             return "";
         }
 
+        const type = targetListView && targetListView.datasource.type;
+        if (type && type !== "database" && type !== "xpath") {
+            return `${widgetName}, widget is only compatible with list view data source type 'Database' and 'XPath'`;
+        }
         if (!(targetListView && targetListView._datasource && targetListView._entity && targetListView.update)) {
             return `${widgetName}: this Mendix version is incompatible`;
         }
