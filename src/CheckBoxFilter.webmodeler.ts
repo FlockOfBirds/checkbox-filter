@@ -3,8 +3,8 @@ import { findDOMNode } from "react-dom";
 import * as classNames from "classnames";
 
 import { Alert } from "./components/Alert";
-import { CheckboxFilter } from "./components/CheckboxFilter";
-import { ContainerProps, ContainerState } from "./components/CheckboxFilterContainer";
+import { CheckboxFilter } from "./components/CheckBoxFilter";
+import { ContainerProps, ContainerState } from "./components/CheckBoxFilterContainer";
 import { Utils, parseStyle } from "./utils/ContainerUtils";
 
 // tslint:disable-next-line class-name

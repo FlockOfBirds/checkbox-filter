@@ -1,4 +1,4 @@
-import { ContainerProps, ListView } from "../components/CheckboxFilterContainer";
+import { ContainerProps, ListView } from "../components/CheckBoxFilterContainer";
 
 export const parseStyle = (style = ""): {[key: string]: string} => {
     try {

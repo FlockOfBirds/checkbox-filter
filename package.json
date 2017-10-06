@@ -1,6 +1,6 @@
 {
-  "name": "checkbox-filter",
-  "widgetName": "CheckboxFilter",
+  "name": "check-box-filter",
+  "widgetName": "CheckBoxFilter",
   "version": "1.0.0",
   "description": "Filter Mendix list views using a checkbox",
   "copyright": "Mendix BV",

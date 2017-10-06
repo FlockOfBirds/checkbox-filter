@@ -2,13 +2,13 @@ import { Component, ReactElement, createElement } from "react";
 import { findDOMNode } from "react-dom";
 
 import { Alert } from "./Alert";
-import { CheckboxFilter, CheckboxFilterProps } from "./CheckboxFilter";
+import { CheckboxFilter, CheckboxFilterProps } from "./CheckBoxFilter";
 import { Utils, parseStyle } from "../utils/ContainerUtils";
 
 import * as classNames from "classnames";
 import * as dijitRegistry from "dijit/registry";
 import * as dojoConnect from "dojo/_base/connect";
-import "./ui/CheckboxFilter.scss";
+import "./ui/CheckBoxFilter.scss";
 
 interface WrapperProps {
     class: string;
