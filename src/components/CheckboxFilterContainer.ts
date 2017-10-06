@@ -36,6 +36,7 @@ type HybridConstraint = Array<{ attribute: string; operator: string; value: stri
 export interface ListView extends mxui.widget._WidgetBase {
     _datasource: {
         _constraints: HybridConstraint | string;
+        _pageObjs: mendix.lib.MxObject[];
     };
     datasource: {
         type: "microflow" | "entityPath" | "database" | "xpath";
@@ -119,7 +120,12 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
             if (filterBy === "XPath") {
                 targetListView.filter[this.props.friendlyId] = constraint;
             } else if (filterBy === "attribute") {
-                targetListView.filter[this.props.friendlyId] = `[contains(${attribute},'${attributeValue}')]`;
+                const ss = targetListView._datasource._pageObjs[0];
+                targetListView.filter[this.props.friendlyId] = (ss && ss.isEnum(attribute))
+                    ? `[${attribute}='${attributeValue.trim()}']`
+                    : (ss && ss.isBoolean(attribute))
+                        ? `[${attribute} = ${attributeValue.trim().toLowerCase()}()]`
+                        : `[contains(${attribute},'${attributeValue}')]`;
             } else {
                 targetListView.filter[this.props.friendlyId] = "";
             }
