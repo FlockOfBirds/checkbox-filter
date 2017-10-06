@@ -15,6 +15,7 @@ interface WrapperProps {
     style: string;
     friendlyId: string;
     mxform?: mxui.lib.form._FormBase;
+    mxObject: mendix.lib.MxObject;
 }
 
 export interface ContainerProps extends WrapperProps {
@@ -118,7 +119,9 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
             const attributeValue = isChecked ? this.props.attributeValue : this.props.unCheckedAttributeValue;
 
             if (filterBy === "XPath") {
-                targetListView.filter[this.props.friendlyId] = constraint;
+                targetListView.filter[this.props.friendlyId] = constraint.indexOf(`[%CurrentObject%]'`) !== -1
+                    ? constraint.replace(`'[%CurrentObject%]'`, this.props.mxObject.getGuid())
+                    : constraint;
             } else if (filterBy === "attribute") {
                 const ss = targetListView._datasource._pageObjs[0];
                 targetListView.filter[this.props.friendlyId] = (ss && ss.isEnum(attribute))
