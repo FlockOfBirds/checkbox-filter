@@ -33,7 +33,7 @@ export class preview extends Component<ContainerProps, ContainerState> {
         this.validateConfigs();
     }
 
-    componentWillReceiveProps(_newProps: ContainerProps) {
+    componentDidUpdate(_newProps: ContainerProps) {
         this.validateConfigs();
     }
 
