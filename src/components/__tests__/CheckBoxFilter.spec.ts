@@ -1,129 +1,55 @@
-// import { ReactElement, createElement } from "react";
-// import { shallow } from "enzyme";
+import { createElement } from "react";
+import { shallow } from "enzyme";
 
-// import { DropdownFilter, DropdownFilterProps, DropdownType } from "../DropdownFilter";
+import { CheckboxFilter, CheckboxFilterProps } from "../CheckBoxFilter";
 
-// describe("DropdownFilter", () => {
-//     const renderDropdownFilter = (props: DropdownFilterProps) => shallow(createElement(DropdownFilter, props));
-//     const dropdownFilterProps: DropdownFilterProps = {
-//         defaultFilterIndex: 1,
-//         enableEmptyFilter: true,
-//         filters: [ {
-//             attribute: "Code",
-//             attributeValue: "256",
-//             caption: "Country",
-//             constraint: "",
-//             filterBy: "attribute",
-//             isDefault: false
-//         } ],
-//         handleChange: jasmine.any(Function) as any,
-//         placeholder: "Select..."
-//     };
-//     const optionAttributes: DropdownType = {
-//         disabled: true,
-//         key: "1",
-//         label: "Select...",
-//         value: "0"
-//     };
-//     const options: ReactElement<{}>[] = [
-//         createElement("option", optionAttributes),
-//         createElement("option", optionAttributes),
-//         createElement("option", optionAttributes)
-//      ];
+describe("CheckBoxFilter", () => {
+    const renderCheckBoxFilter = (filterProps: CheckboxFilterProps) => shallow(createElement(CheckboxFilter, filterProps));
+    // const checkboxfilter = createElement(CheckboxFilter, {
+    //             handleChange: this.applyFilter,
+    //             isChecked: this.props.defaultChecked
+    //         });
 
-//     it("renders the structure correctly", () => {
-//         const dropdownFilter = renderDropdownFilter(dropdownFilterProps);
+    it("renders the structure correctly", () => {
+        const props: CheckboxFilterProps = {
+            handleChange: jasmine.any(Function) as any,
+            isChecked: true
+        };
+        const checkBoxFilter = renderCheckBoxFilter(props);
 
-//         expect(dropdownFilter).toBeElement(
-//             createElement("select", {
-//                 className: "form-control",
-//                 onChange: jasmine.any(Function) as any,
-//                 value: "1"
-//             }, options)
-//             );
-//     });
+        expect(checkBoxFilter).toBeElement(
+            createElement("input", {
+                checked: props.isChecked,
+                defaultChecked: props.isChecked,
+                onChange: jasmine.any(Function) as any,
+                type: "checkbox"
+            })
+        );
+    });
 
-//     describe("select", () => {
-//         it("changes value", (done) => {
-//             const props: DropdownFilterProps = {
-//                 defaultFilterIndex: 1,
-//                 enableEmptyFilter: true,
-//                 filters: [ {
-//                     attribute: "Code",
-//                     attributeValue: "256",
-//                     caption: "Country",
-//                     constraint: "",
-//                     filterBy: "attribute",
-//                     isDefault: false
-//                 } ],
-//                 handleChange: value => value,
-//                 placeholder: "Select..."
-//             };
-//             spyOn(props, "handleChange").and.callThrough();
-//             const wrapper = renderDropdownFilter(props);
-//             const select: any = wrapper.find("select");
+    it("should call onchange function when checked", () => {
+        const props: CheckboxFilterProps = {
+            handleChange: value => value,
+            isChecked: false
+        };
+        spyOn(props, "handleChange").and.callThrough();
+        const wrapper = renderCheckBoxFilter(props);
+        const input = wrapper.find("input");
 
-//             select.simulate("change", {
-//                 currentTarget: {
-//                     selectedOptions: [
-//                         { getAttribute: (_attribute: string) => "Code" }
-//                     ],
-//                     value: "256"
-//                 }
-//             });
+        input.simulate("change", { target: { checked: true } });
+        expect(props.handleChange).toHaveBeenCalledWith(true);
+    });
 
-//             setTimeout(() => {
-//                 expect(props.handleChange).toHaveBeenCalledWith(undefined);
-//                 done();
-//             }, 1000);
-//         });
+    it("should call onchange function when mounted", () => {
+        const props: CheckboxFilterProps = {
+            handleChange: value => value,
+            isChecked: false
+        };
+        spyOn(props, "handleChange").and.callThrough();
+        const wrapper = renderCheckBoxFilter(props);
+        wrapper.instance().componentDidMount();
 
-//         it("updates when the select option changes", (done) => {
-//             const newValue = "Uganda";
-//             const props: DropdownFilterProps = {
-//                 defaultFilterIndex: 1,
-//                 enableEmptyFilter: true,
-//                 filters: [ {
-//                     attribute: "Code",
-//                     attributeValue: "256",
-//                     caption: "Country",
-//                     constraint: "",
-//                     filterBy: "attribute",
-//                     isDefault: false
-//                 } ],
-//                 handleChange: value => value,
-//                 placeholder: "Select..."
-//             };
-//             spyOn(props, "handleChange").and.callThrough();
-//             const wrapper = renderDropdownFilter(props);
-//             const select: any = wrapper.find("select");
+        expect(props.handleChange).toHaveBeenCalledWith(false);
+    });
 
-//             select.simulate("change", {
-//                 currentTarget: {
-//                     selectedOptions: [
-//                         { getAttribute: (_attribute: string) => "Code" }
-//                     ],
-//                     value: "256"
-//                 }
-//             });
-
-//             setTimeout(() => {
-//                 expect(props.handleChange).toHaveBeenCalledWith(undefined);
-
-//                 select.simulate("change", {
-//                     currentTarget: {
-//                         selectedOptions: [
-//                             { getAttribute: (_attribute: string) => "Name" }
-//                         ],
-//                         value: newValue
-//                     }
-//                 });
-
-//                 setTimeout(() => {
-//                     expect(props.handleChange).toHaveBeenCalledWith(undefined);
-//                     done();
-//                 }, 1000);
-//             }, 1000);
-//         });
-//     });
-// });
+});
