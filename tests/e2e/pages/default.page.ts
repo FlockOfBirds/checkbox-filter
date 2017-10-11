@@ -1,15 +1,15 @@
 class DefaultFilter {
 
-    public get dropdownFilter() { return browser.element(".mx-name-dropdownFilter1"); }
+    public get checkBoxFilter() {
+        return browser.element("#mxui_widget_ReactCustomWidgetWrapper_0 > input[type='checkbox']");
+    }
 
-    public get dropdownFilterOption() { return browser.elements(".option:nth-child(8)"); }
+    public get listView() { return browser.element("#mxui_widget_ListView_0"); }
 
-    public get listViewList() { return browser.elements(".mx-name-listView0"); }
-
-    public get listViewFirstItem() { return browser.elements(".mx-listview-item.mx-name-index-0"); }
+    public get listViewItems() { return browser.elements("#mxui_widget_ListView_0 .mx-listview-item"); }
 
     public open(): void {
-        browser.url("/p/DefaultFilter");
+        browser.url("/p/homepage");
     }
 }
 const defaultFilter = new DefaultFilter();

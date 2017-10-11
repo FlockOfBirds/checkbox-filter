@@ -1,26 +1,53 @@
 import defaultFilter from "./pages/default.page";
 
-const dropdownValue = "Uganda";
-
-describe("DropdownFilter", () => {
-    it("when dropdown filter is rendered the list view should filter african countries by default", () => {
+describe("CheckBoxFilter", () => {
+    /*
+        widget properties:
+        - Checked: Official language is "English"
+        - UnChecked: Continent is "Africa"
+        - default: Unchecked
+    */
+    beforeAll(() => {
         defaultFilter.open();
-        defaultFilter.dropdownFilter.waitForVisible();
-        defaultFilter.listViewFirstItem.waitForVisible();
-
-        const itemValue = defaultFilter.listViewFirstItem.getHTML();
-        expect(itemValue).toContain(dropdownValue);
     });
 
-    it("filters a list view by the option selected", () => {
-        defaultFilter.open();
-        defaultFilter.dropdownFilter.waitForVisible();
-        defaultFilter.dropdownFilter.click();
-        defaultFilter.dropdownFilterOption.waitForVisible();
-        defaultFilter.dropdownFilterOption.click();
-        defaultFilter.listViewFirstItem.waitForVisible();
+    describe("when default is not set", () => {
+        it("the checkbox is unchecked", () => {
+            defaultFilter.checkBoxFilter.waitForVisible();
+            const checkBoxFilter = defaultFilter.checkBoxFilter;
+            const checked = checkBoxFilter.isSelected() as boolean;
+            expect(checked).toBe(false);
+        });
 
-        const itemValue = defaultFilter.listViewFirstItem.getHTML();
-        expect(itemValue).toContain(dropdownValue);
+        it("the listview filters only 'African' countries", () => {
+            defaultFilter.listView.waitForVisible();
+            defaultFilter.listViewItems.waitForVisible();
+            const listViewItems = defaultFilter.listViewItems;
+            for (const item of listViewItems.getHTML() as any) {
+                expect(item).toContain("Africa");
+            }
+        });
+    });
+
+    describe("when clicked", () => {
+        beforeAll(() => {
+            defaultFilter.checkBoxFilter.waitForVisible();
+            defaultFilter.checkBoxFilter.click();
+        });
+        it("the checkbox is checked", () => {
+            defaultFilter.checkBoxFilter.waitForVisible();
+            const checkBoxFilter = defaultFilter.checkBoxFilter;
+            const checked = checkBoxFilter.isSelected() as boolean;
+            expect(checked).toBe(true);
+        });
+
+        it("the listview filters only 'English' speaking countries", () => {
+            defaultFilter.listView.waitForVisible();
+            defaultFilter.listViewItems.waitForVisible();
+            const listViewItems = defaultFilter.listViewItems;
+            for (const item of listViewItems.getHTML() as any) {
+                expect(item).toContain("English");
+            }
+        });
     });
 });
