@@ -48,12 +48,12 @@ export class Utils {
         return "";
     }
 
-    static validateCompatibility(props: ContainerProps & { filterNode: HTMLElement; targetListView: ListView; }): string {
+    static validateCompatibility(props: ContainerProps & { targetListView: ListView; }): string {
         const { targetListView } = props;
         const type = targetListView && targetListView.datasource.type;
         const widgetName = props.friendlyId;
 
-        if (!props.filterNode) {
+        if (!targetListView) {
             return `${widgetName}: unable to find a listview with to attach to`;
         }
 

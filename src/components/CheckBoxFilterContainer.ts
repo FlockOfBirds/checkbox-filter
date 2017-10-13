@@ -4,11 +4,11 @@ import { findDOMNode } from "react-dom";
 import { Alert } from "./Alert";
 import { CheckboxFilter, CheckboxFilterProps } from "./CheckBoxFilter";
 import { Utils, parseStyle } from "../utils/ContainerUtils";
+import { DataSourceHelper } from "../utils/DataSourceHelper/DataSourceHelper";
 
 import * as classNames from "classnames";
 import * as dijitRegistry from "dijit/registry";
 import * as dojoConnect from "dojo/_base/connect";
-import "./ui/CheckBoxFilter.scss";
 
 interface WrapperProps {
     class: string;
@@ -32,17 +32,22 @@ export interface ContainerProps extends WrapperProps {
 }
 
 type FilterOptions = "attribute" | "XPath" | "None";
-type HybridConstraint = Array<{ attribute: string; operator: string; value: string; path?: string; }>;
+interface HybridConstraint {
+    attribute: string;
+    operator: string;
+    value: string;
+    path?: string;
+}
 
 export interface ListView extends mxui.widget._WidgetBase {
     _datasource: {
-        _constraints: HybridConstraint | string;
+        _constraints: HybridConstraint[] | string;
         _pageObjs: mendix.lib.MxObject[];
     };
     datasource: {
         type: "microflow" | "entityPath" | "database" | "xpath";
     };
-    __customWidgetDataSourceHelper: any;
+    __customWidgetDataSourceHelper: DataSourceHelper;
     update: (obj: mendix.lib.MxObject | null, callback?: () => void) => void;
     _entity: string;
 }
@@ -56,18 +61,18 @@ export interface ContainerState {
 }
 
 export default class CheckboxFilterContainer extends Component<ContainerProps, ContainerState> {
-    private dataSourceHelper: any;
+    private dataSourceHelper: DataSourceHelper;
+    private alertMessage: string;
     constructor(props: ContainerProps) {
         super(props);
 
         this.applyFilter = this.applyFilter.bind(this);
-        const alertMessage = Utils.validateProps(props);
-        // if (!alertMessage) {
+        if (!Utils.validateProps(props)) {
             // Ensures that the listView is connected so the widget doesn't break in mobile due to unpredictable render timing
-        dojoConnect.connect(props.mxform, "onNavigation", this, this.connectToListView.bind(this));
-        // }
+            dojoConnect.connect(props.mxform, "onNavigation", this, this.connectToListView.bind(this));
+        }
 
-        this.state = { listViewAvailable: false, alertMessage };
+        this.state = { listViewAvailable: false };
     }
 
     render() {
@@ -81,8 +86,9 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
         );
     }
 
-    componentWillReceiveProps(nextProps: ContainerProps) {
-    //    this.setState({ alertMessage: this.validate(this.state.targetNode, this.state.targetListView) });
+    componentWillUpdate(nextProps: ContainerProps, nextState: ContainerState) {
+        console.log("willUpdate"); // tslint:disable-line
+        this.alertMessage = this.validate(nextProps, nextState.targetListView);
         this.applyFilter(nextProps.defaultChecked);
     }
 
@@ -93,16 +99,14 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
     }
 
     private renderAlert() {
-        // const message = this.validate(this.state.targetNode, this.state.targetListView);
-        // this.setState({ validationPassed: !!message });
         return createElement(Alert, {
             className: "widget-checkbox-filter-alert",
-            message: this.state.alertMessage
+            message: this.alertMessage
         });
     }
 
     private renderComponent(): ReactElement<CheckboxFilterProps> {
-        if (!this.state.alertMessage) {
+        if (!this.alertMessage) {
             return createElement(CheckboxFilter, {
                 handleChange: this.applyFilter,
                 isChecked: this.props.defaultChecked
@@ -112,10 +116,15 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
         return null;
     }
 
+    private applyFilter(isChecked: boolean) {
+        // construct constraint based on checked
+        const constraint = this.getConstraint(isChecked);
+        if (this.dataSourceHelper)
+            this.dataSourceHelper.setConstraint(this.props.friendlyId, constraint);
+    }
+
     private getConstraint(isChecked: boolean) {
         const { targetListView } = this.state;
-        // To support multiple filters. We attach each checkbox-filter-widget's selected constraint
-        // On the listView's custom 'filter' object.
         if (targetListView && targetListView._datasource) {
             const attribute = isChecked ? this.props.attribute : this.props.unCheckedAttribute;
             const filterBy = isChecked ? this.props.filterBy : this.props.unCheckedFilterBy;
@@ -134,8 +143,18 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
         }
     }
 
-    private getAttributeConstaint(attribute: string, attributeValue: string): string {
+    private getAttributeConstaint(attribute: string, attributeValue: string): string | HybridConstraint {
         const { targetListView } = this.state;
+
+        if (window.device) {
+            const constraints: HybridConstraint = {
+                attribute,
+                operator: "contains",
+                path: this.props.listViewEntity,
+                value: attributeValue
+            };
+            return constraints;
+        }
         if (targetListView && targetListView._datasource) {
             const mxObject = targetListView._datasource._pageObjs[0];
             if (mxObject && mxObject.isEnum(attribute)) {
@@ -148,7 +167,6 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
         }
     }
 
-/*
     private connectToListView() {
         const filterNode = findDOMNode(this).parentNode as HTMLElement;
         const targetNode = Utils.findTargetNode(filterNode);
@@ -157,9 +175,17 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
         if (targetNode) {
             targetListView = dijitRegistry.byNode(targetNode);
             if (targetListView) {
-                targetListView.filter = targetListView.filter || {};
+                if (!targetListView.__customWidgetDataSourceHelper) {
+                    try {
+                        targetListView.__customWidgetDataSourceHelper = new DataSourceHelper(targetListView);
+                    } catch (error) {
+                        console.log("failed to instantiate DataSourceHelper \n" + error); // tslint:disable-line
+                    }
+                } else if (!DataSourceHelper.checkVersionCompatible(targetListView.__customWidgetDataSourceHelper.version)) {
+                    console.log("Compartibility issue"); // tslint:disable-line
+                }
+                this.dataSourceHelper = targetListView.__customWidgetDataSourceHelper;
                 this.setState({
-                    alertMessage: this.validate(targetNode, targetListView),
                     listViewAvailable: !!targetListView,
                     targetListView,
                     targetNode
@@ -167,42 +193,11 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
             }
         }
     }
-*/
-    private connectToListView() {
-        const filterNode = findDOMNode(this).parentNode as HTMLElement;
-        const targetNode = Utils.findTargetNode(filterNode);
-        let targetListView: ListView | null = null;
 
-        if (targetNode) {
-            this.setState({ targetNode });
-            targetListView = dijitRegistry.byNode(targetNode);
-            if (targetListView) {
-                if (targetListView.__customWidgetDataSourceHelper) {
-                    try {
-                    targetListView.__customWidgetDataSourceHelper = new DataSourceHelper(targetListView);
-                    } catch (error) {
-                        // TODO show nice message message
-                    }
-                } else if (!DataSourceHelper.checkVersionCompatible(targetListView.__customWidgetDataSourceHelper.VERSION)) {
-                    // TODO show nice message message
-                }
-                this.dataSourceHelper = targetListView.__customWidgetDataSourceHelper;
-            }
-        }
-    }
-
-    private applyFilter(isChecked: boolean) {
-        // construct constraint based on checked
-        const constraint = this.getConstraint(isChecked);
-        if (this.dataSourceHelper)
-            this.dataSourceHelper.setConstraint(this.props.friendlyId, constraint);
-    }
-
-    /*private validate(filterNode: HTMLElement, targetListView: ListView) {
-        return Utils.validateCompatibility({
-            ...this.props as ContainerProps,
-            filterNode,
+    private validate(props: ContainerProps, targetListView: ListView) {
+        return Utils.validateProps(props) + Utils.validateCompatibility({
+            ...props as ContainerProps,
             targetListView
         });
-    }*/
+    }
 }
