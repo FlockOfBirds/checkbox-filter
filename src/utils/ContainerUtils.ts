@@ -19,14 +19,9 @@ export const parseStyle = (style = ""): {[key: string]: string} => {
 };
 
 export class Utils {
-    static validate(props: ContainerProps & { filterNode: HTMLElement; targetListView: ListView; isModeler?: boolean}): string {
+    static validateProps(props: ContainerProps): string {
         const widgetName = props.friendlyId;
-        const { targetListView } = props;
         const errorMessage = [];
-        // validate filter values if filterby = attribute, then value should not be empty or "" or " ".
-        if (!props.filterNode) {
-            return `${widgetName}: unable to find a listview with to attach to`;
-        }
 
         if (props.filterBy === "XPath" && !props.constraint) {
             errorMessage.push(`Filter by 'XPath' requires an 'XPath contraint'`);
@@ -50,19 +45,32 @@ export class Utils {
             return `${widgetName} : ${errorMessage.join(", ")}`;
         }
 
-        if (props.isModeler) {
-            return "";
+        return "";
+    }
+
+    static validateCompatibility(props: ContainerProps & { filterNode: HTMLElement; targetListView: ListView; }): string {
+        const { targetListView } = props;
+        const type = targetListView && targetListView.datasource.type;
+        const widgetName = props.friendlyId;
+
+        if (!props.filterNode) {
+            return `${widgetName}: unable to find a listview with to attach to`;
         }
 
-        const type = targetListView && targetListView.datasource.type;
         if (type && type !== "database" && type !== "xpath") {
             return `${widgetName}, widget is only compatible with list view data source type 'Database' and 'XPath'`;
         }
         if (!(targetListView && targetListView._datasource && targetListView._entity && targetListView.update)) {
             return `${widgetName}: this Mendix version is incompatible`;
         }
-        if (targetListView._entity && props.listviewEntity !== targetListView._entity) {
-            return `${widgetName}: supplied entity "${props.listviewEntity}" does not belong to list view data source`;
+        if (targetListView._entity && props.listViewEntity !== targetListView._entity) {
+            return `${widgetName}: supplied entity "${props.listViewEntity}" does not belong to list view data source`;
+        }
+        if (!props.mxObject && props.filterBy === "XPath" && props.constraint.indexOf(`[%CurrentObject%]'`) > -1) {
+            return `${widgetName}: requires a context object`;
+        }
+        if (!props.mxObject && props.unCheckedFilterBy === "XPath" && props.unCheckedConstraint.indexOf(`[%CurrentObject%]'`) > -1) {
+            return `${widgetName}: requires a context object`;
         }
 
         return "";

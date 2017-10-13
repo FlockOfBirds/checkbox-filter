@@ -71,7 +71,7 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-spec-reporter": "0.0.31",
     "karma-webpack": "^2.0.4",
-    "mendix-client": "https://github.com/flockofbirds/mendix-client-typing/archive/7.4.tar.gz",
+    "mendix-client": "^7.6.0",
     "mendix-widget-build-script": "^1.0.0-rc2",
     "node-sass": "^4.5.3",
     "nodemon": "^1.11.0",

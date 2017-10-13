@@ -4,7 +4,7 @@
     <description>Filter Mendix list views using a checkbox</description>
     <icon>iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAAV1BMVEUAAAB+fn4sLCwAAAB+fn52dnZqampaWlpKSkomJiYAAAACAgIBAQEAAAAAAABycnKEhISioqKkpKSysrK/v7/Kysrq6urs7Ozt7e3x8fH29vb4+Pj+/v52ANGvAAAAD3RSTlMATVZXZ2hqbG5zdYKsr+pcwTBcAAAAVUlEQVR42o3NORKAIBBE0QFlccWVde5/TocAikCr/B119ID1FIOSQMRb1CuvuJ+yXnUYExTMXd4E2m/WayjxgeLwqzcXGzfFmBo3OEfuOuYt5Npv9wG6DgRaVjOGtQAAAABJRU5ErkJggg==</icon>
     <properties>
-        <property key="listviewEntity" type="entity">
+        <property key="listViewEntity" type="entity">
             <caption>List view with entity</caption>
             <category>General</category>
             <description/>
@@ -24,7 +24,7 @@
                 <enumerationValue key="XPath">XPath</enumerationValue>
             </enumerationValues>
         </property>
-        <property key="attribute" type="attribute" required="false" entityProperty="listviewEntity">
+        <property key="attribute" type="attribute" required="false" entityProperty="listViewEntity">
             <caption>Attribute</caption>
             <category>Checked</category>
             <description>The attribute to apply filter when filtering by 'attribute'. Note: for enum use the key value, for boolean use 'true' or 'false'</description>
@@ -41,7 +41,7 @@
             <category>Checked</category>
             <description>Value of the attribute to be matching (used when filtering on attribute)</description>
         </property>
-        <property key="constraint" type="entityConstraint" required="false" entityProperty="listviewEntity">
+        <property key="constraint" type="entityConstraint" required="false" entityProperty="listViewEntity">
             <caption>XPath constraint</caption>
             <category>Checked</category>
             <description>Constraint on the data (used when filtering by XPath)</description>
@@ -56,7 +56,7 @@
                 <enumerationValue key="XPath">XPath</enumerationValue>
             </enumerationValues>
         </property>
-        <property key="unCheckedAttribute" type="attribute" required="false" entityProperty="listviewEntity">
+        <property key="unCheckedAttribute" type="attribute" required="false" entityProperty="listViewEntity">
             <caption>Attribute </caption>
             <category>Unchecked</category>
             <description>The attribute to apply filter when filtering by 'attribute'. Note: for enum use the key value, for boolean use 'true' or 'false'</description>
@@ -73,10 +73,10 @@
             <category>Unchecked</category>
             <description>Value of the attribute to be matching (used when filtering on attribute)</description>
         </property>
-        <property key="unCheckedConstraint" type="entityConstraint" required="false" entityProperty="listviewEntity">
+        <property key="unCheckedConstraint" type="entityConstraint" required="false" entityProperty="listViewEntity">
             <caption>XPath constraint </caption>
             <category>Unchecked</category>
-            <description>Constraint on the data (used when comparison is XPath)</description>
+            <description>Constraint on the data (used when filtering by XPath)</description>
         </property>
     </properties>
 </widget>

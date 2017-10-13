@@ -22,7 +22,6 @@ Mendix 7.6
 ## Usage
 Configure the widget as below.
 
-
 ## Issues, suggestions and feature requests
 Please report issues at [https://github.com/mendixlabs/checkbox-filter/issues](https://github.com/mendixlabs/checkbox-filter/issues).
 

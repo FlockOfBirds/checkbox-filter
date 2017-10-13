@@ -5,10 +5,6 @@ import { CheckboxFilter, CheckboxFilterProps } from "../CheckBoxFilter";
 
 describe("CheckBoxFilter", () => {
     const renderCheckBoxFilter = (filterProps: CheckboxFilterProps) => shallow(createElement(CheckboxFilter, filterProps));
-    // const checkboxfilter = createElement(CheckboxFilter, {
-    //             handleChange: this.applyFilter,
-    //             isChecked: this.props.defaultChecked
-    //         });
 
     it("renders the structure correctly", () => {
         const props: CheckboxFilterProps = {
@@ -39,17 +35,4 @@ describe("CheckBoxFilter", () => {
         input.simulate("change", { target: { checked: true } });
         expect(props.handleChange).toHaveBeenCalledWith(true);
     });
-
-    it("should call onchange function when mounted", () => {
-        const props: CheckboxFilterProps = {
-            handleChange: value => value,
-            isChecked: false
-        };
-        spyOn(props, "handleChange").and.callThrough();
-        const wrapper = renderCheckBoxFilter(props);
-        wrapper.instance().componentDidMount();
-
-        expect(props.handleChange).toHaveBeenCalledWith(false);
-    });
-
 });

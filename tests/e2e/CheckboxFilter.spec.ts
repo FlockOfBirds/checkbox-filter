@@ -34,6 +34,7 @@ describe("CheckBoxFilter", () => {
             defaultFilter.checkBoxFilter.waitForVisible();
             defaultFilter.checkBoxFilter.click();
         });
+
         it("the checkbox is checked", () => {
             defaultFilter.checkBoxFilter.waitForVisible();
             const checkBoxFilter = defaultFilter.checkBoxFilter;
