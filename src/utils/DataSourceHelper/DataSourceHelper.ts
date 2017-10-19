@@ -18,7 +18,6 @@ interface HybridConstraint {
 interface ListView extends mxui.widget._WidgetBase {
     _datasource: {
         _constraints: HybridConstraint[] | string;
-        _pageObjs: mendix.lib.MxObject[];
     };
     datasource: {
         type: "microflow" | "entityPath" | "database" | "xpath";
@@ -60,7 +59,8 @@ export class DataSourceHelper {
     }
 
     private compatibilityCheck() {
-        if (!(this.widget._datasource && this.widget._datasource._constraints !== undefined && this.widget._entity && this.widget.update)) {
+        if (!(this.widget._datasource && this.widget._datasource._constraints !== undefined && this.widget._entity
+                && this.widget.update && this.widget.datasource.type)) {
             throw new Error("Mendix version is incompatible");
         }
     }
