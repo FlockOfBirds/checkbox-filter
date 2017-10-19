@@ -30,7 +30,7 @@ interface ListView extends mxui.widget._WidgetBase {
 export class DataSourceHelper {
     static VERSION: Version = { major: 1, minor: 0, path: 0 };
     version: Version;
-    private delay = 100; // TODO check optimal timing.
+    private delay = 50;
     private timeoutHandle?: number;
     private store: ConstraintStore;
     private widget: ListView;
@@ -50,6 +50,7 @@ export class DataSourceHelper {
             window.clearTimeout(this.timeoutHandle);
         }
         this.timeoutHandle = window.setTimeout(() => {
+            // TODO Check if there's currently no update happening on the listView. If there's an update running set a timeout and try it out later.
             this.applyConstraint();
         }, this.delay);
     }
@@ -69,11 +70,11 @@ export class DataSourceHelper {
 
         if (window.device) {
             constraints = Object.keys(this.store)
-            .map(key => this.store[key] as HybridConstraint)
-            .filter(mobileConstraint => mobileConstraint.value);
+                .map(key => this.store[key] as HybridConstraint)
+                .filter(mobileConstraint => mobileConstraint.value);
         } else {
             constraints = Object.keys(this.store)
-            .map(key => this.store[key]).join("");
+                .map(key => this.store[key]).join("");
         }
 
         this.widget._datasource._constraints = constraints;

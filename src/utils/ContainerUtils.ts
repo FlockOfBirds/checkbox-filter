@@ -50,11 +50,11 @@ export class Utils {
 
     static validateCompatibility(props: ContainerProps & { targetListView: ListView; }): string {
         const { targetListView } = props;
-        const type = targetListView && targetListView.datasource.type;
+        const type = targetListView && targetListView.datasource && targetListView.datasource.type;
         const widgetName = props.friendlyId;
 
         if (!targetListView) {
-            return `${widgetName}: unable to find a listview with to attach to`;
+            return `${widgetName}: unable to find a listview to attach to`;
         }
 
         if (type && type !== "database" && type !== "xpath") {
@@ -82,9 +82,9 @@ export class Utils {
         while (!targetNode && filterNode) {
             targetNode = filterNode.querySelectorAll(`.mx-listview`)[0] as HTMLElement;
             if (targetNode || filterNode.isEqualNode(document) || filterNode.classList.contains("mx-incubator")
-            || filterNode.classList.contains("mx-offscreen")) {
-                    break;
-                }
+                    || filterNode.classList.contains("mx-offscreen")) {
+                break;
+            }
             filterNode = filterNode.parentNode as HTMLElement;
         }
 

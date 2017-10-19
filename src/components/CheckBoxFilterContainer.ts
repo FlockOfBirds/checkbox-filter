@@ -47,7 +47,7 @@ export interface ListView extends mxui.widget._WidgetBase {
     datasource: {
         type: "microflow" | "entityPath" | "database" | "xpath";
     };
-    __customWidgetDataSourceHelper: DataSourceHelper;
+    __customWidgetDataSourceHelper?: DataSourceHelper;
     update: (obj: mendix.lib.MxObject | null, callback?: () => void) => void;
     _entity: string;
 }
@@ -63,14 +63,14 @@ export interface ContainerState {
 export default class CheckboxFilterContainer extends Component<ContainerProps, ContainerState> {
     private dataSourceHelper: DataSourceHelper;
     private alertMessage: string;
+    private navigationHandler: object;
+
     constructor(props: ContainerProps) {
         super(props);
 
         this.applyFilter = this.applyFilter.bind(this);
-        if (!Utils.validateProps(props)) {
-            // Ensures that the listView is connected so the widget doesn't break in mobile due to unpredictable render timing
-            dojoConnect.connect(props.mxform, "onNavigation", this, this.connectToListView.bind(this));
-        }
+        // Ensures that the listView is connected so the widget doesn't break in mobile due to unpredictable render timing
+        this.navigationHandler = dojoConnect.connect(props.mxform, "onNavigation", this, this.connectToListView.bind(this));
 
         this.state = { listViewAvailable: false };
     }
@@ -87,15 +87,20 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
     }
 
     componentWillUpdate(nextProps: ContainerProps, nextState: ContainerState) {
-        console.log("willUpdate"); // tslint:disable-line
+        // Added validation here to check especially for runtime errors like when
+        // the widget is configured to listen to current object but mxObject is undefined
         this.alertMessage = this.validate(nextProps, nextState.targetListView);
-        this.applyFilter(nextProps.defaultChecked);
+
     }
 
     componentDidUpdate(_prevProps: ContainerProps, prevState: ContainerState) {
         if (this.state.listViewAvailable && !prevState.listViewAvailable) {
             this.applyFilter(this.props.defaultChecked);
+            this.alertMessage = "";
         }
+    }
+    componentWillUnmount() {
+        dojoConnect.disconnect(this.navigationHandler);
     }
 
     private renderAlert() {
@@ -117,10 +122,10 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
     }
 
     private applyFilter(isChecked: boolean) {
-        // construct constraint based on checked
         const constraint = this.getConstraint(isChecked);
-        if (this.dataSourceHelper)
+        if (this.dataSourceHelper) {
             this.dataSourceHelper.setConstraint(this.props.friendlyId, constraint);
+        }
     }
 
     private getConstraint(isChecked: boolean) {
@@ -156,11 +161,12 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
             return constraints;
         }
         if (targetListView && targetListView._datasource) {
-            const mxObject = targetListView._datasource._pageObjs[0];
-            if (mxObject && mxObject.isEnum(attribute)) {
+            const entityMeta = mx.meta.getEntity(this.props.listViewEntity);
+
+            if (entityMeta.isEnum(attribute)) {
                 return `[${attribute}='${attributeValue.trim()}']`;
-            } else if (mxObject && mxObject.isBoolean(attribute)) {
-                return `[${attribute} = ${attributeValue.trim().toLowerCase()}()]`;
+            } else if (entityMeta.isBoolean(attribute)) {
+                return `[${attribute} = '${attributeValue.trim().toLowerCase()}']`;
             } else {
                 return `[contains(${attribute},'${attributeValue}')]`;
             }
@@ -179,13 +185,17 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
                     try {
                         targetListView.__customWidgetDataSourceHelper = new DataSourceHelper(targetListView);
                     } catch (error) {
-                        console.log("failed to instantiate DataSourceHelper \n" + error); // tslint:disable-line
+                        this.alertMessage = error.message;
+                        this.setState({
+                            alertMessage: error.message
+                        });
                     }
                 } else if (!DataSourceHelper.checkVersionCompatible(targetListView.__customWidgetDataSourceHelper.version)) {
-                    console.log("Compartibility issue"); // tslint:disable-line
+                    this.alertMessage = "Compatibility issue";
                 }
                 this.dataSourceHelper = targetListView.__customWidgetDataSourceHelper;
                 this.setState({
+                    alertMessage: this.alertMessage,
                     listViewAvailable: !!targetListView,
                     targetListView,
                     targetNode
