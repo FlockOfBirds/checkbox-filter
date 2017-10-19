@@ -24,7 +24,7 @@
                 <enumerationValue key="XPath">XPath</enumerationValue>
             </enumerationValues>
         </property>
-        <property key="attribute" type="attribute" required="false" entityProperty="listViewEntity">
+        <property key="attribute" type="attribute" required="false" isPath="optional" pathType="reference" entityProperty="listViewEntity">
             <caption>Attribute</caption>
             <category>Checked</category>
             <description>The attribute to apply filter when filtering by 'attribute'. Note: for enum use the key value, for boolean use 'true' or 'false'</description>
@@ -56,7 +56,7 @@
                 <enumerationValue key="XPath">XPath</enumerationValue>
             </enumerationValues>
         </property>
-        <property key="unCheckedAttribute" type="attribute" required="false" entityProperty="listViewEntity">
+        <property key="unCheckedAttribute" type="attribute" required="false" isPath="optional" pathType="reference" entityProperty="listViewEntity">
             <caption>Attribute </caption>
             <category>Unchecked</category>
             <description>The attribute to apply filter when filtering by 'attribute'. Note: for enum use the key value, for boolean use 'true' or 'false'</description>
