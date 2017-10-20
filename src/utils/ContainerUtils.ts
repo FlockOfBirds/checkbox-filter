@@ -24,7 +24,7 @@ export class Utils {
         const errorMessage = [];
 
         if (props.filterBy === "XPath" && !props.constraint) {
-            errorMessage.push(`Filter by 'XPath' requires an 'XPath contraint'`);
+            errorMessage.push(`Filter by 'XPath' requires an 'XPath constraint'`);
         }
         if (props.filterBy === "attribute" && !props.attribute) {
             errorMessage.push(`Filter by 'Attribute' requires an 'Attribute'`);
@@ -33,7 +33,7 @@ export class Utils {
             errorMessage.push(`Filter by 'Attribute' requires an 'Attribute value`);
         }
         if (props.unCheckedFilterBy === "XPath" && !props.unCheckedConstraint) {
-            errorMessage.push(`Unchecked filter by 'XPath' requires an 'XPath contraint'`);
+            errorMessage.push(`Unchecked filter by 'XPath' requires an 'XPath constraint'`);
         }
         if (props.unCheckedFilterBy === "attribute" && !props.unCheckedAttribute) {
             errorMessage.push(`Unchecked filter by 'Attribute' requires an 'Attribute'`);
@@ -54,7 +54,7 @@ export class Utils {
         const widgetName = props.friendlyId;
 
         if (!targetListView) {
-            return `${widgetName}: unable to find a listview to attach to`;
+            return `${widgetName}: unable to find a list view to attach to`;
         }
 
         if (type && type !== "database" && type !== "xpath") {

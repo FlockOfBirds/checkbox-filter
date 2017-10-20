@@ -1,4 +1,4 @@
-import "./ui/DataSourceHelper.scss";
+import "./DataSourceHelper.scss";
 
 interface ConstraintStore {
     [widgetId: string]: string | HybridConstraint;
@@ -28,30 +28,47 @@ interface ListView extends mxui.widget._WidgetBase {
 
 export class DataSourceHelper {
     static VERSION: Version = { major: 1, minor: 0, path: 0 };
-    version: Version;
-    private delay = 50;
+    version: Version = DataSourceHelper.VERSION;
+    private delay = 0;
     private timeoutHandle?: number;
-    private store: ConstraintStore;
+    private store: ConstraintStore = {};
     private widget: ListView;
+    private running = false;
+    private isConstraintChanged = false;
 
     constructor(widget: ListView) {
         this.widget = widget;
 
         this.compatibilityCheck();
-
-        this.store = {};
-        this.version = DataSourceHelper.VERSION;
     }
 
     setConstraint(widgetId: string, constraint: string | HybridConstraint) {
         this.store[widgetId] = constraint;
+
         if (this.timeoutHandle) {
             window.clearTimeout(this.timeoutHandle);
         }
-        this.timeoutHandle = window.setTimeout(() => {
-            // TODO Check if there's currently no update happening on the listView. If there's an update running set a timeout and try it out later.
-            this.applyConstraint();
-        }, this.delay);
+        if (!this.running) {
+            this.timeoutHandle = window.setTimeout(() => {
+                this.running = true;
+                // TODO Check if there's currently no update happening on the listView.
+                // If there's an update running set a timeout and try it out later.
+                this.iterativeApplyConstraint();
+          }, this.delay);
+        } else {
+            this.isConstraintChanged = true;
+        }
+    }
+
+    private iterativeApplyConstraint() {
+        this.applyConstraint(() => {
+            if (this.isConstraintChanged) {
+                this.isConstraintChanged = false;
+                this.iterativeApplyConstraint();
+            } else {
+                this.running = false;
+            }
+        });
     }
 
     public static checkVersionCompatible(version: Version): boolean {
@@ -65,7 +82,7 @@ export class DataSourceHelper {
         }
     }
 
-    private applyConstraint() {
+    private applyConstraint(callback: () => void) {
         let constraints: HybridConstraint[] | string;
 
         if (window.device) {
@@ -79,7 +96,10 @@ export class DataSourceHelper {
 
         this.widget._datasource._constraints = constraints;
         this.showLoader();
-        this.widget.update(null, () => this.hideLoader());
+        this.widget.update(null, () => {
+           this.hideLoader();
+           callback();
+        });
     }
 
     private showLoader() {
