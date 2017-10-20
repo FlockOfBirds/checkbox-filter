@@ -2,7 +2,7 @@ import defaultFilter from "./pages/default.page";
 
 describe("CheckBoxFilter", () => {
     /*
-        widget properties:
+        widget properties in sandbox:
         - Checked: Official language is "English"
         - UnChecked: Continent is "Africa"
         - default: Unchecked

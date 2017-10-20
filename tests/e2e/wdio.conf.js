@@ -15,7 +15,7 @@ exports.config = {
     bail: 0,
     screenshotPath: "dist/wdio/",
     baseUrl: debug ? "http://localhost:8080/" : "https://checkboxfilter.mxapps.io/",
-    waitforTimeout: 10000,
+    waitforTimeout: 100000,
     connectionRetryTimeout: 90000,
     connectionRetryCount: 0,
     services: [ "selenium-standalone" ],
