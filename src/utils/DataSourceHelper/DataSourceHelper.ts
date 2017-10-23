@@ -5,7 +5,9 @@ interface ConstraintStore {
 }
 
 interface Version {
-    major: number; minor: number; path: number;
+    major: number;
+    minor: number;
+    patch: number;
 }
 
 interface HybridConstraint {
@@ -27,9 +29,11 @@ interface ListView extends mxui.widget._WidgetBase {
 }
 
 export class DataSourceHelper {
-    static VERSION: Version = { major: 1, minor: 0, path: 0 };
-    version: Version = DataSourceHelper.VERSION;
-    private delay = 0;
+    // The version of a Datasource is static, it never changes.
+    static VERSION: Version = { major: 1, minor: 0, patch: 0 };
+    // The static data source version is made publicly accessible through this variable on dataSourceHelper instances.
+    public version: Version = DataSourceHelper.VERSION;
+    private delay = 50;
     private timeoutHandle?: number;
     private store: ConstraintStore = {};
     private widget: ListView;
@@ -38,7 +42,6 @@ export class DataSourceHelper {
 
     constructor(widget: ListView) {
         this.widget = widget;
-
         this.compatibilityCheck();
     }
 
@@ -72,7 +75,7 @@ export class DataSourceHelper {
     }
 
     public static checkVersionCompatible(version: Version): boolean {
-        return DataSourceHelper.VERSION.major === version.major;
+        return this.VERSION.major === version.major;
     }
 
     private compatibilityCheck() {

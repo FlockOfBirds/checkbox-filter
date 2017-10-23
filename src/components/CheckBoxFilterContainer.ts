@@ -42,7 +42,6 @@ interface HybridConstraint {
 export interface ListView extends mxui.widget._WidgetBase {
     _datasource: {
         _constraints: HybridConstraint[] | string;
-        _pageObjs: mendix.lib.MxObject[];
     };
     datasource: {
         type: "microflow" | "entityPath" | "database" | "xpath";
@@ -57,7 +56,6 @@ export interface ContainerState {
     targetListView?: ListView;
     targetNode?: HTMLElement;
     validationPassed?: boolean;
-    alertMessage?: string;
 }
 
 export default class CheckboxFilterContainer extends Component<ContainerProps, ContainerState> {
@@ -68,11 +66,10 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
     constructor(props: ContainerProps) {
         super(props);
 
+        this.state = { listViewAvailable: false };
         this.applyFilter = this.applyFilter.bind(this);
         // Ensures that the listView is connected so the widget doesn't break in mobile due to unpredictable render timing
         this.navigationHandler = dojoConnect.connect(props.mxform, "onNavigation", this, this.connectToListView.bind(this));
-
-        this.state = { listViewAvailable: false };
     }
 
     render() {
@@ -187,15 +184,16 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
                     } catch (error) {
                         this.alertMessage = error.message;
                         this.setState({
-                            alertMessage: error.message
+                            listViewAvailable: !!targetListView,
+                            targetListView,
+                            targetNode
                         });
                     }
                 } else if (!DataSourceHelper.checkVersionCompatible(targetListView.__customWidgetDataSourceHelper.version)) {
-                    this.alertMessage = "Compatibility issue";
+                    this.alertMessage = "DataSource compatibility issue";
                 }
                 this.dataSourceHelper = targetListView.__customWidgetDataSourceHelper;
                 this.setState({
-                    alertMessage: this.alertMessage,
                     listViewAvailable: !!targetListView,
                     targetListView,
                     targetNode
