@@ -1,3 +1,7 @@
+.widget-data-source-helper-initial-loading > * {
+    opacity: 0 !important;
+}
+
 .widget-data-source-helper-loading ul:before {
     background-image: url(./loading.gif);
     background-repeat: no-repeat;

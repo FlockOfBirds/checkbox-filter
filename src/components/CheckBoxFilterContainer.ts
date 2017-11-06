@@ -32,7 +32,7 @@ export interface ContainerProps extends WrapperProps {
 }
 
 type FilterOptions = "attribute" | "XPath" | "None";
-interface HybridConstraint {
+interface OfflineConstraint {
     attribute: string;
     operator: string;
     value: string;
@@ -78,6 +78,13 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
     //     this.alertMessage = this.validate(nextProps, nextState.targetListView);
 
     // }
+
+    componentDidMount() {
+        const filterNode = findDOMNode(this).parentNode as HTMLElement;
+        const targetNode = Utils.findTargetNode(filterNode);
+        DataSourceHelper.hideContent(targetNode);
+        // this.dataSourceHelper = new DataSourceHelper(targetNode, null, this.props.friendlyId, DataSourceHelper.VERSION);
+    }
 
     componentDidUpdate(_prevProps: ContainerProps, prevState: ContainerState) {
         if (this.state.listViewAvailable && !prevState.listViewAvailable) {
@@ -133,11 +140,11 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
         }
     }
 
-    private getAttributeConstaint(attribute: string, attributeValue: string): string | HybridConstraint {
+    private getAttributeConstaint(attribute: string, attributeValue: string): string | OfflineConstraint {
         const { targetListView } = this.state;
 
-        if (window.device) {
-            const constraints: HybridConstraint = {
+        if (window.mx.isOffline()) {
+            const constraints: OfflineConstraint = {
                 attribute,
                 operator: "contains",
                 path: this.props.listViewEntity,
@@ -162,28 +169,22 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
         const filterNode = findDOMNode(this).parentNode as HTMLElement;
         const targetNode = Utils.findTargetNode(filterNode);
         let targetListView: ListView | null = null;
+        let errorMessage = "";
 
         if (targetNode) {
             targetListView = dijitRegistry.byNode(targetNode);
             if (targetListView) {
-                if (!targetListView.__customWidgetDataSourceHelper) {
-                    try {
-                        targetListView.__customWidgetDataSourceHelper = new DataSourceHelper(targetListView, this.props.friendlyId);
-                    } catch (error) {
-                        this.setState({
-                            alertMessage: error.message
-                        });
-                    }
+                try {
+                    this.dataSourceHelper = new DataSourceHelper(targetNode, targetListView, this.props.friendlyId, DataSourceHelper.VERSION);
+                } catch (error) {
+                    errorMessage = error.message;
                 }
-                this.dataSourceHelper = targetListView.__customWidgetDataSourceHelper;
-                const versionCompatibilityMessage = this.dataSourceHelper
-                                                        .versionCompatibility(DataSourceHelper.VERSION, this.props.friendlyId);
 
                 this.setState({
-                    alertMessage: versionCompatibilityMessage || Utils.validateCompatibility({
-                                ...this.props as ContainerProps,
-                                targetListView
-                            }),
+                    alertMessage: errorMessage || Utils.validateCompatibility({
+                        ...this.props as ContainerProps,
+                        targetListView
+                    }),
                     listViewAvailable: !!targetListView,
                     targetListView,
                     targetNode
