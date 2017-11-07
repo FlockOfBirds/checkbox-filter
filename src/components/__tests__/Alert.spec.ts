@@ -21,11 +21,11 @@ describe("Alert", () => {
 
     it("renders with the specified class name", () => {
         const message = "This is an error";
-        const className = "widget-dropdown-filter";
+        const className = "widget-check-box-filter";
         const alert = shallow(createElement(Alert, { bootstrapStyle: "danger", message, className }));
 
         expect(alert).toBeElement(
-            createElement("div", { className: "alert alert-danger widget-dropdown-filter" }, message)
+            createElement("div", { className: "alert alert-danger widget-check-box-filter" }, message)
         );
     });
 });

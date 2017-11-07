@@ -4,7 +4,7 @@ import { findDOMNode } from "react-dom";
 import { Alert } from "./Alert";
 import { CheckboxFilter, CheckboxFilterProps } from "./CheckBoxFilter";
 import { Utils, parseStyle } from "../utils/ContainerUtils";
-import { DataSourceHelper, ListView } from "../utils/DataSourceHelper/DataSourceHelper";
+import { DataSourceHelper, ListView } from "mendix-data-source-helper";
 
 import * as classNames from "classnames";
 import * as dijitRegistry from "dijit/registry";
@@ -72,18 +72,10 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
         );
     }
 
-    // componentWillUpdate(nextProps: ContainerProps, nextState: ContainerState) {
-    //     // Added validation here to check especially for runtime errors like when
-    //     // the widget is configured to listen to current object but mxObject is undefined
-    //     this.alertMessage = this.validate(nextProps, nextState.targetListView);
-
-    // }
-
     componentDidMount() {
         const filterNode = findDOMNode(this).parentNode as HTMLElement;
         const targetNode = Utils.findTargetNode(filterNode);
         DataSourceHelper.hideContent(targetNode);
-        // this.dataSourceHelper = new DataSourceHelper(targetNode, null, this.props.friendlyId, DataSourceHelper.VERSION);
     }
 
     componentDidUpdate(_prevProps: ContainerProps, prevState: ContainerState) {

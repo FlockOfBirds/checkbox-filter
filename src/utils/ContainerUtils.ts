@@ -1,5 +1,5 @@
 import { ContainerProps } from "../components/CheckBoxFilterContainer";
-import { ListView } from "../utils/DataSourceHelper/DataSourceHelper";
+import { ListView } from "mendix-data-source-helper";
 
 export const parseStyle = (style = ""): {[key: string]: string} => {
     try {
