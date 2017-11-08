@@ -20,28 +20,38 @@ export const parseStyle = (style = ""): {[key: string]: string} => {
 };
 
 export class Utils {
-    static validateProps(props: ContainerProps): string {
+    static validateProps(props: ContainerProps & { isWebModeler?: boolean }): string {
         const widgetName = props.friendlyId;
         const errorMessage = [];
 
         if (props.filterBy === "XPath" && !props.constraint) {
-            errorMessage.push(`Filter by 'XPath' requires an 'XPath constraint'`);
+            errorMessage.push("Filter by 'XPath' requires an 'XPath constraint'");
         }
         if (props.filterBy === "attribute" && !props.attribute) {
-            errorMessage.push(`Filter by 'Attribute' requires an 'Attribute'`);
+            errorMessage.push("Filter by 'Attribute' requires an 'Attribute'");
         }
         if (props.filterBy === "attribute" && !props.attributeValue) {
-            errorMessage.push(`Filter by 'Attribute' requires an 'Attribute value`);
+            errorMessage.push("Filter by 'Attribute' requires an 'Attribute value'");
         }
         if (props.unCheckedFilterBy === "XPath" && !props.unCheckedConstraint) {
-            errorMessage.push(`Unchecked filter by 'XPath' requires an 'XPath constraint'`);
+            errorMessage.push("Unchecked filter by 'XPath' requires an 'XPath constraint'");
         }
         if (props.unCheckedFilterBy === "attribute" && !props.unCheckedAttribute) {
-            errorMessage.push(`Unchecked filter by 'Attribute' requires an 'Attribute'`);
+            errorMessage.push("Unchecked filter by 'Attribute' requires an 'Attribute'");
         }
         if (props.unCheckedFilterBy === "attribute" && !props.unCheckedAttributeValue) {
-            errorMessage.push(`Unchecked filter by 'Attribute' requires an 'Attribute value`);
+            errorMessage.push("Unchecked filter by 'Attribute' requires an 'Attribute value'");
         }
+        if (!props.isWebModeler && window.mx.isOffline() && props.filterBy === "XPath") {
+            errorMessage.push("Filter by 'XPath' is not supported in offline mode");
+        }
+        if (!props.isWebModeler && window.mx.isOffline() && props.unCheckedFilterBy === "XPath") {
+            errorMessage.push("Unchecked filter by 'XPath' is not supported in offline mode");
+        }
+        if (!props.isWebModeler && !props.mxObject && props.filterBy === "XPath" && props.constraint.indexOf("[%CurrentObject%]'") > -1) {
+            errorMessage.push("Requires a context object");
+        }
+
         if (errorMessage.length) {
             return `${widgetName} : ${errorMessage.join(", ")}`;
         }
@@ -55,22 +65,16 @@ export class Utils {
         const widgetName = props.friendlyId;
 
         if (!targetListView) {
-            return `${widgetName}: unable to find a list view to attach to`;
+            return `${widgetName}: Unable to find a list view to connect`;
         }
         if (type && type !== "database" && type !== "xpath") {
-            return `${widgetName}, widget is only compatible with list view data source type 'Database' and 'XPath'`;
+            return `${widgetName}: Widget is only compatible with list view data source type 'Database' and 'XPath'`;
         }
         if (!(targetListView && targetListView._datasource && targetListView._entity && targetListView.update)) {
-            return `${widgetName}: this Mendix version is incompatible`;
+            return `${widgetName}: This Mendix version is incompatible`;
         }
         if (targetListView._entity && props.listViewEntity !== targetListView._entity) {
-            return `${widgetName}: supplied entity "${props.listViewEntity}" does not belong to list view data source`;
-        }
-        if (!props.mxObject && props.filterBy === "XPath" && props.constraint.indexOf(`[%CurrentObject%]'`) > -1) {
-            return `${widgetName}: requires a context object`;
-        }
-        if (!props.mxObject && props.unCheckedFilterBy === "XPath" && props.unCheckedConstraint.indexOf(`[%CurrentObject%]'`) > -1) {
-            return `${widgetName}: requires a context object`;
+            return `${widgetName}: Supplied entity "${props.listViewEntity}" does not belong to list view data source`;
         }
 
         return "";

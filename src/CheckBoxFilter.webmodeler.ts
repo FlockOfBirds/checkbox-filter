@@ -29,7 +29,7 @@ export class preview extends Component<ContainerProps, {}> {
     private renderAlert() {
         return createElement(Alert, {
             className: "widget-checkbox-filter-alert",
-            message: Utils.validateProps(this.props as ContainerProps)
+            message: Utils.validateProps({ ...this.props as ContainerProps, isWebModeler: true })
         });
     }
 }
