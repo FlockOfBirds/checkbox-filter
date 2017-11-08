@@ -61,13 +61,15 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
     }
 
     render() {
+        const errorMessage = this.state.alertMessage || Utils.validateProps(this.props);
+
         return createElement("div",
             {
                 className: classNames("widget-checkbox-filter", this.props.class),
                 style: parseStyle(this.props.style)
             },
-            this.renderAlert(this.state.alertMessage),
-            this.renderCheckBoxFilter()
+            this.renderAlert(errorMessage),
+            this.renderCheckBoxFilter(errorMessage)
         );
     }
 
@@ -80,8 +82,9 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
         }
     }
 
-    componentDidUpdate(_prevProps: ContainerProps, prevState: ContainerState) {
-        if (this.state.listViewAvailable && !prevState.listViewAvailable) {
+    componentDidUpdate(prevProps: ContainerProps, prevState: ContainerState) {
+        if (this.state.listViewAvailable
+                && (!prevState.listViewAvailable || prevProps.mxObject !== this.props.mxObject)) {
             this.applyFilter(this.props.defaultChecked);
         }
     }
@@ -97,8 +100,8 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
         });
     }
 
-    private renderCheckBoxFilter(): ReactElement<CheckboxFilterProps> {
-        if (!this.state.alertMessage) {
+    private renderCheckBoxFilter(alertMessage: string): ReactElement<CheckboxFilterProps> {
+        if (!alertMessage) {
             return createElement(CheckboxFilter, {
                 handleChange: this.applyFilter,
                 isChecked: this.props.defaultChecked
@@ -122,16 +125,20 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
             const filterBy = isChecked ? this.props.filterBy : this.props.unCheckedFilterBy;
             const constraint = isChecked ? this.props.constraint : this.props.unCheckedConstraint;
             const attributeValue = isChecked ? this.props.attributeValue : this.props.unCheckedAttributeValue;
+            const mxObjectId = this.props.mxObject ? this.props.mxObject.getGuid() : "";
 
-            if (filterBy === "XPath") {
-                return constraint.indexOf(`[%CurrentObject%]'`) !== -1
-                    ? constraint.replace(`'[%CurrentObject%]'`, this.props.mxObject.getGuid())
-                    : constraint;
+            if (filterBy === "XPath" && constraint.indexOf(`[%CurrentObject%]'`) !== -1) {
+                if (mxObjectId) {
+                    return constraint.replace(`'[%CurrentObject%]'`, mxObjectId);
+                }
+                return "";
+            } else if (filterBy === "XPath") {
+                return constraint;
             } else if (filterBy === "attribute") {
                 return this.getAttributeConstraint(attribute, attributeValue);
-            } else {
-               return "";
             }
+
+            return "";
         }
     }
 
@@ -171,7 +178,7 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
             targetListView = dijitRegistry.byNode(targetNode);
             if (targetListView) {
                 try {
-                    this.dataSourceHelper = new DataSourceHelper(targetNode, targetListView, this.props.friendlyId, DataSourceHelper.VERSION);
+                    this.dataSourceHelper = DataSourceHelper.getInstance(targetListView, this.props.friendlyId, DataSourceHelper.VERSION);
                 } catch (error) {
                     errorMessage = error.message;
                 }
@@ -182,7 +189,11 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
             ...this.props as ContainerProps,
             targetListView
         });
+
         errorMessage = validationMessage || errorMessage;
+        if (errorMessage) {
+            DataSourceHelper.showContent(targetNode);
+        }
 
         this.setState({
             alertMessage: errorMessage,
