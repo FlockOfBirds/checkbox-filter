@@ -1,14 +1,13 @@
 import { Component, ReactElement, createElement } from "react";
 import { findDOMNode } from "react-dom";
-
-import { Alert } from "./Alert";
-import { CheckboxFilter, CheckboxFilterProps } from "./CheckBoxFilter";
-import { Utils, parseStyle } from "../utils/ContainerUtils";
-import { DataSourceHelper, ListView } from "mendix-data-source-helper";
-
 import * as classNames from "classnames";
 import * as dijitRegistry from "dijit/registry";
 import * as dojoConnect from "dojo/_base/connect";
+
+import { Alert, AlertProps } from "./Alert";
+import { CheckboxFilter, CheckboxFilterProps } from "./CheckBoxFilter";
+import { Utils, parseStyle } from "../utils/ContainerUtils";
+import { DataSourceHelper, ListView } from "mendix-data-source-helper";
 
 interface WrapperProps {
     class: string;
@@ -32,6 +31,7 @@ export interface ContainerProps extends WrapperProps {
 }
 
 type FilterOptions = "attribute" | "XPath" | "None";
+
 interface OfflineConstraint {
     attribute: string;
     operator: string;
@@ -61,21 +61,23 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
     }
 
     render() {
-        // this.alertMessage = this.validate(this.props, this.state.targetListView) || this.alertMessage || "";
         return createElement("div",
             {
                 className: classNames("widget-checkbox-filter", this.props.class),
                 style: parseStyle(this.props.style)
             },
             this.renderAlert(this.state.alertMessage),
-            this.renderComponent()
+            this.renderCheckBoxFilter()
         );
     }
 
     componentDidMount() {
         const filterNode = findDOMNode(this).parentNode as HTMLElement;
         const targetNode = Utils.findTargetNode(filterNode);
-        DataSourceHelper.hideContent(targetNode);
+
+        if (targetNode) {
+            DataSourceHelper.hideContent(targetNode);
+        }
     }
 
     componentDidUpdate(_prevProps: ContainerProps, prevState: ContainerState) {
@@ -83,18 +85,19 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
             this.applyFilter(this.props.defaultChecked);
         }
     }
+
     componentWillUnmount() {
         dojoConnect.disconnect(this.navigationHandler);
     }
 
-    private renderAlert(message: string) {
+    private renderAlert(message: string): ReactElement<AlertProps> {
         return createElement(Alert, {
             className: "widget-checkbox-filter-alert",
             message
         });
     }
 
-    private renderComponent(): ReactElement<CheckboxFilterProps> {
+    private renderCheckBoxFilter(): ReactElement<CheckboxFilterProps> {
         if (!this.state.alertMessage) {
             return createElement(CheckboxFilter, {
                 handleChange: this.applyFilter,
@@ -106,14 +109,14 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
     }
 
     private applyFilter(isChecked: boolean) {
-        const constraint = this.getConstraint(isChecked);
         if (this.dataSourceHelper) {
-            this.dataSourceHelper.setConstraint(this.props.friendlyId, constraint);
+            this.dataSourceHelper.setConstraint(this.props.friendlyId, this.getConstraint(isChecked));
         }
     }
 
-    private getConstraint(isChecked: boolean) {
+    private getConstraint(isChecked: boolean): string | OfflineConstraint {
         const { targetListView } = this.state;
+
         if (targetListView && targetListView._datasource) {
             const attribute = isChecked ? this.props.attribute : this.props.unCheckedAttribute;
             const filterBy = isChecked ? this.props.filterBy : this.props.unCheckedFilterBy;
@@ -125,14 +128,14 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
                     ? constraint.replace(`'[%CurrentObject%]'`, this.props.mxObject.getGuid())
                     : constraint;
             } else if (filterBy === "attribute") {
-                return this.getAttributeConstaint(attribute, attributeValue);
+                return this.getAttributeConstraint(attribute, attributeValue);
             } else {
                return "";
             }
         }
     }
 
-    private getAttributeConstaint(attribute: string, attributeValue: string): string | OfflineConstraint {
+    private getAttributeConstraint(attribute: string, attributeValue: string): string | OfflineConstraint {
         const { targetListView } = this.state;
 
         if (window.mx.isOffline()) {
@@ -142,6 +145,7 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
                 path: this.props.listViewEntity,
                 value: attributeValue
             };
+
             return constraints;
         }
         if (targetListView && targetListView._datasource) {
@@ -171,17 +175,19 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
                 } catch (error) {
                     errorMessage = error.message;
                 }
-
-                this.setState({
-                    alertMessage: errorMessage || Utils.validateCompatibility({
-                        ...this.props as ContainerProps,
-                        targetListView
-                    }),
-                    listViewAvailable: !!targetListView,
-                    targetListView,
-                    targetNode
+                const validationMessage = Utils.validateCompatibility({
+                    ...this.props as ContainerProps,
+                    targetListView
                 });
+                errorMessage = validationMessage || errorMessage;
             }
         }
+
+        this.setState({
+            alertMessage: errorMessage,
+            listViewAvailable: !!targetListView,
+            targetListView,
+            targetNode
+        });
     }
 }

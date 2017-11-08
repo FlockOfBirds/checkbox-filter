@@ -27,13 +27,9 @@ export class preview extends Component<ContainerProps, {}> {
     }
 
     private renderAlert() {
-        const errorMessage = Utils.validateProps({
-            ...this.props as ContainerProps
-        });
-
         return createElement(Alert, {
             className: "widget-checkbox-filter-alert",
-            message: errorMessage
+            message: Utils.validateProps(this.props as ContainerProps)
         });
     }
 }

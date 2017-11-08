@@ -57,7 +57,6 @@ export class Utils {
         if (!targetListView) {
             return `${widgetName}: unable to find a list view to attach to`;
         }
-
         if (type && type !== "database" && type !== "xpath") {
             return `${widgetName}, widget is only compatible with list view data source type 'Database' and 'XPath'`;
         }
