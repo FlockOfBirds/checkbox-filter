@@ -175,13 +175,14 @@ export default class CheckboxFilterContainer extends Component<ContainerProps, C
                 } catch (error) {
                     errorMessage = error.message;
                 }
-                const validationMessage = Utils.validateCompatibility({
-                    ...this.props as ContainerProps,
-                    targetListView
-                });
-                errorMessage = validationMessage || errorMessage;
             }
         }
+
+        const validationMessage = Utils.validateCompatibility({
+            ...this.props as ContainerProps,
+            targetListView
+        });
+        errorMessage = validationMessage || errorMessage;
 
         this.setState({
             alertMessage: errorMessage,
